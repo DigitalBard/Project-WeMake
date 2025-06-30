@@ -1,0 +1,62 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1751192832183,
+      "tag": "0000_clumsy_black_tom",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1751196388009,
+      "tag": "0001_naive_ultimates",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1751199263821,
+      "tag": "0002_useful_azazel",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1751203319556,
+      "tag": "0003_swift_daredevil",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1751204354822,
+      "tag": "0004_simple_whirlwind",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1751205643544,
+      "tag": "0005_numerous_exodus",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1751205709303,
+      "tag": "0006_cloudy_prima",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1751281674801,
+      "tag": "0007_chief_rogue",
+      "breakpoints": true
+    }
+  ]
+}
