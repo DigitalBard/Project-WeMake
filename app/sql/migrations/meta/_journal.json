@@ -57,6 +57,13 @@
       "when": 1751281674801,
       "tag": "0007_chief_rogue",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1751635312055,
+      "tag": "0008_simple_forgotten_one",
+      "breakpoints": true
     }
   ]
 }
