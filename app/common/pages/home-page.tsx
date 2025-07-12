@@ -5,11 +5,48 @@ import { IdeaCard } from '../../features/ideas/components/idea-card'
 import { JobCard } from '../../features/jobs/components/job-card'
 import { TeamCard } from '../../features/teams/components/team-card'
 import { Button } from '../components/ui/button'
+import { getProductsByDateRange } from '~/features/products/queries'
+import { DateTime } from 'luxon'
+import type { Route } from './+types/home-page'
+import { getPosts } from '~/features/community/queries'
+import { getGptIdeas } from '~/features/ideas/queries'
+import { getJobs } from '~/features/jobs/queries'
+import { getTeams } from '~/features/teams/queries'
+
 export const meta: MetaFunction = () => {
   return [{ title: 'Home | wemake' }, { name: 'description', content: 'Home page' }]
 }
 
-export default function HomePage() {
+export const loader = async () => {
+  const products = await getProductsByDateRange({
+    startDate: DateTime.now().startOf('day'),
+    endDate: DateTime.now().endOf('day'),
+    limit: 7,
+  })
+
+  const posts = await getPosts({
+    limit: 10,
+    sorting: 'newest',
+  })
+
+  const ideas = await getGptIdeas({
+    limit: 10,
+  })
+
+  const jobs = await getJobs({
+    limit: 11,
+  })
+
+  const teams = await getTeams({
+    limit: 7,
+  })
+
+  return { products, posts, ideas, jobs, teams }
+}
+
+export default function HomePage({ loaderData }: Route.ComponentProps) {
+  const { products, posts, ideas, jobs, teams } = loaderData
+
   return (
     <div className="space-y-40">
       {/* Products */}
@@ -21,15 +58,15 @@ export default function HomePage() {
             <Link to="/products/leaderboards">Explore all products &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {products.map(product => (
           <ProductCard
-            key={index}
-            id={`productId-${index}`}
-            name={`Product Name ${index}`}
-            description={`Product Description ${index}`}
-            commentCount={12}
-            viewCount={12}
-            upvoteCount={120}
+            key={product.product_id}
+            id={product.product_id}
+            name={product.name}
+            description={product.tagline}
+            reviewsCount={product.reviews}
+            viewCount={product.views}
+            upvoteCount={product.upvotes}
           />
         ))}
       </div>
@@ -42,15 +79,16 @@ export default function HomePage() {
             <Link to="/community">Explore all discussions &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {posts.map(post => (
           <PostCard
-            key={index}
-            id={`postId-${index}`}
-            title={`Discussion Title ${index}`}
-            author={`Author ${index}`}
-            avatarUrl={`https://github.com/apple.png`}
-            category={`Category ${index}`}
-            createdAt={`12 hours ago`}
+            key={post.post_id}
+            id={post.post_id}
+            title={post.title}
+            author={post.author}
+            avatarUrl={post.author_avatar}
+            category={post.topic}
+            createdAt={post.created_at}
+            votesCount={post.upvotes}
           />
         ))}
       </div>
@@ -63,15 +101,15 @@ export default function HomePage() {
             <Link to="/ideas">Explore all ideas &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {ideas.map(idea => (
           <IdeaCard
-            key={index}
-            id="ideaId"
-            title="A startup that creates an AI-powered generated personal trainer, deliveering customized fitness recommendations and tracking of progress using a mobile app to track workouts and progress as well as a website to manage the business."
-            viewCount={123}
-            createdAt="12 hours ago"
-            upvoteCount={12}
-            isClaimed={index % 2 === 0}
+            key={idea.gpt_idea_id}
+            id={idea.gpt_idea_id}
+            title={idea.idea}
+            viewCount={idea.views}
+            createdAt={idea.created_at}
+            upvoteCount={idea.likes}
+            isClaimed={idea.is_claimed}
           />
         ))}
       </div>
@@ -84,18 +122,18 @@ export default function HomePage() {
             <Link to="/jobs">Explore all jobs &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {jobs.map(job => (
           <JobCard
-            key={index}
-            id="jobId"
-            companyName="Tesla"
-            companyLogoUrl="https://github.com/facebook.png"
-            companyHq="San Francisco, CA"
-            title="Software Engineer"
-            createdAt="12 hours ago"
-            locationType="Full-time"
-            positionLocation="Remote"
-            salary="$100,000 - $120,000"
+            key={job.job_id}
+            id={job.job_id}
+            companyName={job.company_name}
+            companyLogoUrl={job.company_logo}
+            companyHq={job.company_location}
+            title={job.position}
+            createdAt={job.created_at}
+            type={job.job_type}
+            positionLocation={job.location}
+            salary={job.salary_range}
           />
         ))}
       </div>
@@ -108,14 +146,14 @@ export default function HomePage() {
             <Link to="/teams">Explore all teams &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 7 }).map((_, index) => (
+        {teams.map(team => (
           <TeamCard
-            key={index}
-            id="teamId"
-            username="lynn"
-            avatarUrl="https://github.com/inthetiger.png"
-            positions={['React Developer', 'Backend Developer', 'Product Developer']}
-            projectDescription="a new social media platform"
+            key={team.team_id}
+            id={team.team_id}
+            username={team.team_leader.username}
+            avatarUrl={team.team_leader.avatar}
+            positions={team.roles.split(', ')}
+            projectDescription={team.product_description}
           />
         ))}
       </div>

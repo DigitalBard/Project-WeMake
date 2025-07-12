@@ -13,18 +13,27 @@ import { Textarea } from '~/common/components/ui/textarea'
 import { Form } from 'react-router'
 import { Badge } from '~/common/components/ui/badge'
 import { cn } from '~/lib/utils'
+import type { Route } from './+types/profile-layout'
+import { getUserProfile } from '../queries'
 
-export default function ProfileLayout() {
+export const loader = async ({ params }: Route.LoaderArgs & { params: { username: string } }) => {
+  const user = await getUserProfile(params.username)
+  return { user }
+}
+
+export default function ProfileLayout({ loaderData }: Route.ComponentProps) {
+  const { user } = loaderData
+
   return (
     <div className="space-y-10">
       <div className="flex items-center gap-4">
         <Avatar className="size-40">
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>N</AvatarFallback>
+          {user.avatar ? <AvatarImage src={user.avatar} /> : null}
+          <AvatarFallback className="text-2xl">{user.name[0]}</AvatarFallback>
         </Avatar>
         <div className="space-y-5">
           <div className="flex gap-2">
-            <h1 className="text-2xl font-semibold">John Doe</h1>
+            <h1 className="text-2xl font-semibold">{user.name}</h1>
             <Button variant={'outline'} asChild>
               <Link to={'/my/settings'}>Edit profile</Link>
             </Button>
@@ -50,8 +59,8 @@ export default function ProfileLayout() {
             </Dialog>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">@john_doe</span>
-            <Badge variant="secondary">Product Designer</Badge>
+            <span className="text-sm text-muted-foreground">@{user.username}</span>
+            <Badge variant="secondary">{user.role}</Badge>
             <Badge variant="secondary">100 followers</Badge>
             <Badge variant="secondary">100 following</Badge>
           </div>
@@ -59,9 +68,9 @@ export default function ProfileLayout() {
       </div>
       <div className="flex gap-5">
         {[
-          { label: 'About', to: '/users/username' },
-          { label: 'Products', to: '/users/username/products' },
-          { label: 'Posts', to: '/users/username/posts' },
+          { label: 'About', to: `/users/${user.username}` },
+          { label: 'Products', to: `/users/${user.username}/products` },
+          { label: 'Posts', to: `/users/${user.username}/posts` },
         ].map(({ label, to }) => (
           <NavLink
             end
@@ -75,7 +84,7 @@ export default function ProfileLayout() {
         ))}
       </div>
       <div className="max-w-screen-md">
-        <Outlet />
+        <Outlet context={{ headline: user.headline, bio: user.bio }} />
       </div>
     </div>
   )

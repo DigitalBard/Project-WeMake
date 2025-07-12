@@ -1,24 +1,36 @@
 import PageHeader from '~/common/components/page-header'
 import type { Route } from './+types/ideas-page'
 import { IdeaCard } from '../components/idea-card'
+import { getGptIdeas } from '../queries'
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'IdeasGPT | wemake' }, { name: 'description', content: 'Find ideas for your next project' }]
 }
 
-export default function IdeasPage() {
+export const loader = async () => {
+  const ideas = await getGptIdeas({
+    limit: 10,
+  })
+
+  return { ideas }
+}
+
+export default function IdeasPage({ loaderData }: Route.ComponentProps) {
+  const { ideas } = loaderData
+
   return (
     <div className="space-y-20">
       <PageHeader title="IdeasGPT" description="Find ideas for your next project" />
       <div className="grid grid-cols-4 gap-4">
-        {Array.from({ length: 10 }).map((_, index) => (
+        {ideas.map(idea => (
           <IdeaCard
-            id="ideaId"
-            title="A startup that creates an AI-powered generated personal trainer, deliveering customized fitness recommendations and tracking of progress using a mobile app to track workouts and progress as well as a website to manage the business."
-            viewCount={123}
-            createdAt="12 hours ago"
-            upvoteCount={12}
-            isClaimed={index % 2 === 0}
+            key={idea.gpt_idea_id}
+            id={idea.gpt_idea_id}
+            title={idea.idea}
+            viewCount={idea.views}
+            createdAt={idea.created_at}
+            upvoteCount={idea.likes}
+            isClaimed={idea.is_claimed}
           />
         ))}
       </div>

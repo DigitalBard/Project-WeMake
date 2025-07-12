@@ -4,15 +4,15 @@ import { ChevronUpIcon, EyeIcon, MessageCircleIcon } from 'lucide-react'
 import { Button } from '../../../common/components/ui/button'
 
 interface ProductCardProps {
-  id: string
+  id: number
   name: string
   description: string
-  commentCount: number
-  viewCount: number
-  upvoteCount: number
+  reviewsCount: string
+  viewCount: string
+  upvoteCount: string
 }
 
-export function ProductCard({ id, name, description, commentCount, viewCount, upvoteCount }: ProductCardProps) {
+export function ProductCard({ id, name, description, reviewsCount, viewCount, upvoteCount }: ProductCardProps) {
   return (
     <Link to={`/products/${id}`} className="block">
       <Card className="w-full flex items-center justify-between bg-transparent hover:bg-card/50">
@@ -22,7 +22,7 @@ export function ProductCard({ id, name, description, commentCount, viewCount, up
           <div className="flex items-center gap-4 mt-2">
             <div className="flex items-center gap-px text-xs text-muted-foreground">
               <MessageCircleIcon className="w-4 h-4" />
-              <span>{commentCount}</span>
+              <span>{reviewsCount}</span>
             </div>
             <div className="flex items-center gap-px text-xs text-muted-foreground">
               <EyeIcon className="w-4 h-4" />

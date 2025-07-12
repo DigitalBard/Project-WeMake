@@ -1,9 +1,19 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from 'react-router'
+import {
+  isRouteErrorResponse,
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useLocation,
+  useNavigation,
+} from 'react-router'
 
 import type { Route } from './+types/root'
 import stylesheet from './app.css?url'
 import Navigation from './common/components/navigation'
 import { Settings } from 'luxon'
+import { cn } from './lib/utils'
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
@@ -41,9 +51,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   // 사용자 위치 추적
   const { pathname } = useLocation()
+  const navigation = useNavigation()
+  const isLoading = navigation.state === 'loading'
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
 
   return (
-    <div className={pathname.includes('/auth/') ? '' : 'py-28 px-5 lg:px-20'}>
+    <div className={cn({ 'py-28 px-5 lg:px-20': !pathname.includes('/auth/'), 'opacity-50': isLoading })}>
       {pathname.includes('/auth') ? null : <Navigation isLoggedIn={true} hasNotifications={true} hasMessages={true} />}
       <Outlet />
     </div>

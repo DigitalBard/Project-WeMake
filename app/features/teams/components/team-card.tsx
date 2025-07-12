@@ -5,9 +5,9 @@ import { Badge } from '../../../common/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '../../../common/components/ui/avatar'
 
 interface TeamCardProps {
-  id: string
+  id: number
   username: string
-  avatarUrl: string
+  avatarUrl: string | null
   positions: string[]
   projectDescription: string
 }
@@ -22,7 +22,7 @@ export function TeamCard({ id, username, avatarUrl, positions, projectDescriptio
               <span>@{username}</span>
               <Avatar className="size-5">
                 <AvatarFallback>{username[0]}</AvatarFallback>
-                <AvatarImage src={avatarUrl} />
+                {avatarUrl && <AvatarImage src={avatarUrl} />}
               </Avatar>
             </Badge>
             <span> is looking for</span>

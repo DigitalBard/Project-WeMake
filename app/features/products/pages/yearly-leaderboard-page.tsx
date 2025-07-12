@@ -6,6 +6,8 @@ import PageHeader from '~/common/components/page-header'
 import { ProductCard } from '../components/product-card'
 import { Button } from '~/common/components/ui/button'
 import { ProductPagination } from '~/common/components/product-pagination'
+import { getProductPagesByDateRange, getProductsByDateRange } from '../queries'
+import { PAGE_SIZE } from '../constants'
 
 export const meta: Route.MetaFunction = ({ params }) => {
   const date = DateTime.fromObject({
@@ -24,7 +26,7 @@ const paramsSchema = z.object({
   year: z.coerce.number(),
 })
 
-export const loader = ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { success, data: parsedData } = paramsSchema.safeParse(params)
 
   if (!success) {
@@ -68,12 +70,29 @@ export const loader = ({ params }: Route.LoaderArgs) => {
     )
   }
 
+  const url = new URL(request.url)
+  const products = await getProductsByDateRange({
+    startDate: date.startOf('year'),
+    endDate: date.endOf('year'),
+    limit: PAGE_SIZE,
+    page: Number(url.searchParams.get('page')) || 1,
+  })
+
+  const totalPages = await getProductPagesByDateRange({
+    startDate: date.startOf('year'),
+    endDate: date.endOf('year'),
+  })
+
   return {
+    products,
+    totalPages,
     ...parsedData,
   }
 }
 
 export default function YearlyLeaderboardPage({ loaderData }: Route.ComponentProps) {
+  const { products, totalPages } = loaderData
+
   const urlDate = DateTime.fromObject({ year: loaderData.year })
   const previousYear = urlDate.minus({ years: 1 })
   const nextYear = urlDate.plus({ years: 1 })
@@ -105,19 +124,19 @@ export default function YearlyLeaderboardPage({ loaderData }: Route.ComponentPro
         ) : null}
       </div>
       <div className="space-y-5 w-full max-w-screen-md mx-auto">
-        {Array.from({ length: 11 }).map((_, index) => (
+        {products.map(product => (
           <ProductCard
-            key={index}
-            id={`productId-${index}`}
-            name={`Product Name ${index}`}
-            description={`Product Description ${index}`}
-            commentCount={12}
-            viewCount={12}
-            upvoteCount={120}
+            key={product.product_id}
+            id={product.product_id.toString()}
+            name={product.name}
+            description={product.tagline}
+            reviewsCount={product.reviews}
+            viewCount={product.views}
+            upvoteCount={product.upvotes}
           />
         ))}
       </div>
-      <ProductPagination totalPages={10} />
+      <ProductPagination totalPages={totalPages} />
     </div>
   )
 }

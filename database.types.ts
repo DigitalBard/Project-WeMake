@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instanciate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.3 (519615d)"
+  }
   public: {
     Tables: {
       categories: {
@@ -30,6 +35,27 @@ export type Database = {
           description?: string
           name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_id: string
+          event_type: Database["public"]["Enums"]["event_types"] | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_id?: string
+          event_type?: Database["public"]["Enums"]["event_types"] | null
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_id?: string
+          event_type?: Database["public"]["Enums"]["event_types"] | null
         }
         Relationships: []
       }
@@ -120,6 +146,13 @@ export type Database = {
             columns: ["gpt_idea_id"]
             isOneToOne: false
             referencedRelation: "gpt_ideas"
+            referencedColumns: ["gpt_idea_id"]
+          },
+          {
+            foreignKeyName: "gpt_ideas_likes_gpt_idea_id_gpt_ideas_gpt_idea_id_fk"
+            columns: ["gpt_idea_id"]
+            isOneToOne: false
+            referencedRelation: "gpt_ideas_view"
             referencedColumns: ["gpt_idea_id"]
           },
           {
@@ -311,6 +344,13 @@ export type Database = {
             foreignKeyName: "notifications_post_id_posts_post_id_fk"
             columns: ["post_id"]
             isOneToOne: false
+            referencedRelation: "community_post_detail"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "notifications_post_id_posts_post_id_fk"
+            columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "community_post_list_view"
             referencedColumns: ["post_id"]
           },
@@ -320,6 +360,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "posts"
             referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "notifications_product_id_products_product_id_fk"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_overview_view"
+            referencedColumns: ["product_id"]
           },
           {
             foreignKeyName: "notifications_product_id_products_product_id_fk"
@@ -384,6 +431,13 @@ export type Database = {
             foreignKeyName: "post_replies_post_id_posts_post_id_fk"
             columns: ["post_id"]
             isOneToOne: false
+            referencedRelation: "community_post_detail"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_replies_post_id_posts_post_id_fk"
+            columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "community_post_list_view"
             referencedColumns: ["post_id"]
           },
@@ -421,6 +475,13 @@ export type Database = {
             foreignKeyName: "post_upvotes_post_id_posts_post_id_fk"
             columns: ["post_id"]
             isOneToOne: false
+            referencedRelation: "community_post_detail"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_upvotes_post_id_posts_post_id_fk"
+            columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "community_post_list_view"
             referencedColumns: ["post_id"]
           },
@@ -449,6 +510,7 @@ export type Database = {
           title: string
           topic_id: number | null
           updated_at: string
+          upvotes: number | null
         }
         Insert: {
           content: string
@@ -458,6 +520,7 @@ export type Database = {
           title: string
           topic_id?: number | null
           updated_at?: string
+          upvotes?: number | null
         }
         Update: {
           content?: string
@@ -467,6 +530,7 @@ export type Database = {
           title?: string
           topic_id?: number | null
           updated_at?: string
+          upvotes?: number | null
         }
         Relationships: [
           {
@@ -475,6 +539,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "posts_topic_id_topics_topic_id_fk"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "community_post_detail"
+            referencedColumns: ["topic_id"]
           },
           {
             foreignKeyName: "posts_topic_id_topics_topic_id_fk"
@@ -499,6 +570,13 @@ export type Database = {
           profile_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "product_upvotes_product_id_products_product_id_fk"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_overview_view"
+            referencedColumns: ["product_id"]
+          },
           {
             foreignKeyName: "product_upvotes_product_id_products_product_id_fk"
             columns: ["product_id"]
@@ -567,7 +645,7 @@ export type Database = {
             referencedColumns: ["category_id"]
           },
           {
-            foreignKeyName: "products_profile_id_profiles_profile_id_fk"
+            foreignKeyName: "products_to_profiles_fk"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -650,6 +728,13 @@ export type Database = {
             foreignKeyName: "reviews_product_id_products_product_id_fk"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "product_overview_view"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "reviews_product_id_products_product_id_fk"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["product_id"]
           },
@@ -670,7 +755,8 @@ export type Database = {
           product_name: string
           product_stage: Database["public"]["Enums"]["product_stages"]
           roles: string
-          team_id: string
+          team_id: number
+          team_leader_id: string | null
           team_size: number
           updated_at: string
         }
@@ -681,7 +767,8 @@ export type Database = {
           product_name: string
           product_stage: Database["public"]["Enums"]["product_stages"]
           roles: string
-          team_id: string
+          team_id?: never
+          team_leader_id?: string | null
           team_size: number
           updated_at?: string
         }
@@ -692,11 +779,20 @@ export type Database = {
           product_name?: string
           product_stage?: Database["public"]["Enums"]["product_stages"]
           roles?: string
-          team_id?: string
+          team_id?: never
+          team_leader_id?: string | null
           team_size?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "teams_team_leader_id_profiles_profile_id_fk"
+            columns: ["team_leader_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
       }
       topics: {
         Row: {
@@ -721,6 +817,25 @@ export type Database = {
       }
     }
     Views: {
+      community_post_detail: {
+        Row: {
+          author_avatar: string | null
+          author_created_at: string | null
+          author_name: string | null
+          author_role: Database["public"]["Enums"]["role"] | null
+          content: string | null
+          created_at: string | null
+          post_id: number | null
+          products: number | null
+          replies: number | null
+          title: string | null
+          topic_id: number | null
+          topic_name: string | null
+          topic_slug: string | null
+          upvotes: number | null
+        }
+        Relationships: []
+      }
       community_post_list_view: {
         Row: {
           author: string | null
@@ -730,15 +845,50 @@ export type Database = {
           post_id: number | null
           title: string | null
           topic: string | null
+          topic_slug: string | null
           upvotes: number | null
+        }
+        Relationships: []
+      }
+      gpt_ideas_view: {
+        Row: {
+          created_at: string | null
+          gpt_idea_id: number | null
+          idea: string | null
+          is_claimed: boolean | null
+          likes: number | null
+          views: number | null
+        }
+        Relationships: []
+      }
+      product_overview_view: {
+        Row: {
+          average_rating: number | null
+          description: string | null
+          how_it_works: string | null
+          icon: string | null
+          name: string | null
+          product_id: number | null
+          reviews: string | null
+          tagline: string | null
+          upvotes: string | null
+          url: string | null
+          views: string | null
         }
         Relationships: []
       }
     }
     Functions: {
-      [_ in never]: never
+      track_event: {
+        Args: {
+          event_type: Database["public"]["Enums"]["event_types"]
+          event_data: Json
+        }
+        Returns: undefined
+      }
     }
     Enums: {
+      event_types: "product_view" | "product_visit" | "profile_view"
       job_type: "full-time" | "part-time" | "freelance" | "internship"
       location: "remote" | "on-site" | "hybrid"
       notification_types: "follow" | "review" | "reply" | "mention"
@@ -765,21 +915,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -797,14 +951,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -820,14 +976,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -843,14 +1001,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -858,14 +1018,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
@@ -873,6 +1035,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      event_types: ["product_view", "product_visit", "profile_view"],
       job_type: ["full-time", "part-time", "freelance", "internship"],
       location: ["remote", "on-site", "hybrid"],
       notification_types: ["follow", "review", "reply", "mention"],

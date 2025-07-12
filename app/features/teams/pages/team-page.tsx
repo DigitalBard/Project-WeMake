@@ -6,27 +6,35 @@ import { Button } from '~/common/components/ui/button'
 import { Form } from 'react-router'
 import InputPair from '~/common/components/input-pair'
 import { Card, CardContent, CardHeader, CardTitle } from '~/common/components/ui/card'
+import { getTeamById } from '../queries'
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Team Details | wemake' }, { name: 'description', content: '팀 정보를 확인해보세요' }]
 }
 
-export default function TeamPage() {
+export const loader = async ({ params }: Route.LoaderArgs) => {
+  const team = await getTeamById(Number(params.teamId))
+  return { team }
+}
+
+export default function TeamPage({ loaderData }: Route.ComponentProps) {
+  const { team } = loaderData
+
   return (
     <div className="space-y-10">
-      <PageHeader title="Join lynn's team" />
+      <PageHeader title={`Join ${team.team_leader.name}'s team`} />
       <div className="grid grid-cols-6 gap-20 items-start">
         <div className="col-span-4 grid grid-cols-4 gap-5">
           {[
-            { title: 'Produt name', value: 'Dog Social Media' },
-            { title: 'Stage', value: 'MVP' },
-            { title: 'Team size', value: '3' },
-            { title: 'Available equity', value: '50' },
+            { title: 'Produt name', value: team.product_name },
+            { title: 'Stage', value: team.product_stage },
+            { title: 'Team size', value: team.team_size },
+            { title: 'Available equity', value: team.equity_split },
           ].map(({ title, value }) => (
             <Card key={title}>
               <CardHeader>
                 <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-                <CardContent className="p-0 font-bold text-2xl">
+                <CardContent className="p-0 font-bold text-2xl capitalize">
                   <p>{value}</p>
                 </CardContent>
               </CardHeader>
@@ -37,7 +45,7 @@ export default function TeamPage() {
               <CardTitle className="text-sm font-medium text-muted-foreground">Looking for</CardTitle>
               <CardContent className="p-0 font-bold text-2xl">
                 <ul className="text-lg list-disc list-inside">
-                  {['React Developer', 'Backend Developer', 'Product Manager', 'UI/UX Designer'].map(role => (
+                  {team.roles.split(',').map(role => (
                     <li key={role}>{role}</li>
                   ))}
                 </ul>
@@ -48,7 +56,7 @@ export default function TeamPage() {
             <CardHeader>
               <CardTitle className="text-sm font-medium text-muted-foreground">Idea description</CardTitle>
               <CardContent className="p-0 font-meidum text-xl">
-                <p>We are building a new social media platform for dogs to connect with each other.</p>
+                <p>{team.product_description}</p>
               </CardContent>
             </CardHeader>
           </Card>
@@ -56,12 +64,12 @@ export default function TeamPage() {
         <aside className="col-span-2 border rounded-lg shadow-sm p-6 space-y-5">
           <div className="flex gap-5">
             <Avatar>
-              <AvatarFallback>N</AvatarFallback>
-              <AvatarImage src="https://github.com/facebook.png" />
+              <AvatarFallback>{team.team_leader.name[0]}</AvatarFallback>
+              {team.team_leader.avatar ? <AvatarImage src={team.team_leader.avatar} /> : null}
             </Avatar>
-            <div className="flex flex-col">
-              <h4 className="text-lg font-medium">Nicolas</h4>
-              <Badge variant="secondary">Entrepreneur</Badge>
+            <div className="flex flex-col items-start">
+              <h4 className="text-lg font-medium">{team.team_leader.name}</h4>
+              <Badge variant="secondary">{team.team_leader.role}</Badge>
             </div>
           </div>
           <Form className="space-y-5">

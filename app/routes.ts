@@ -10,11 +10,13 @@ export default [
     // other sub pages
     ...prefix('leaderboards', [
       index('features/products/pages/leaderboard-page.tsx'),
-      route('/yearly/:year', 'features/products/pages/yearly-leaderboard-page.tsx'),
-      route('/monthly/:year/:month', 'features/products/pages/monthly-leaderboard-page.tsx'),
-      route('/weekly/:year/:week', 'features/products/pages/weekly-leaderboard-page.tsx'),
-      route('/daily/:year/:month/:day', 'features/products/pages/daily-leaderboard-page.tsx'),
-      route('/:period', 'features/products/pages/leaderboards-redirection-page.tsx'),
+      layout('features/products/layouts/leaderboard-layout.tsx', [
+        route('/yearly/:year', 'features/products/pages/yearly-leaderboard-page.tsx'),
+        route('/monthly/:year/:month', 'features/products/pages/monthly-leaderboard-page.tsx'),
+        route('/weekly/:year/:week', 'features/products/pages/weekly-leaderboard-page.tsx'),
+        route('/daily/:year/:month/:day', 'features/products/pages/daily-leaderboard-page.tsx'),
+        route('/:period', 'features/products/pages/leaderboards-redirection-page.tsx'),
+      ]),
     ]),
     ...prefix('categories', [
       index('features/products/pages/categories-page.tsx'),
@@ -29,6 +31,7 @@ export default [
         route('/overview', 'features/products/pages/product-overview-page.tsx'),
         route('/reviews', 'features/products/pages/product-reviews-page.tsx'),
       ]),
+      route('/visit', 'features/products/pages/product-visit-page.tsx'),
     ]),
   ]),
   // Ideas
@@ -86,8 +89,8 @@ export default [
       ]),
     ]),
   ]),
-  layout('features/users/layouts/profile-layout.tsx', [
-    ...prefix('/users/:username', [
+  ...prefix('/users/:username', [
+    layout('features/users/layouts/profile-layout.tsx', [
       index('features/users/pages/profile-page.tsx'),
       route('/products', 'features/users/pages/profile-products-page.tsx'),
       route('/posts', 'features/users/pages/profile-posts-page.tsx'),

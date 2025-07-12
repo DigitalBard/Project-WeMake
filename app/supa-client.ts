@@ -14,6 +14,15 @@ type Database = MergeDeep<
             string | null
           >
         }
+        gpt_ideas_view: {
+          Row: SetNonNullable<SupabaseDatabase['public']['Views']['gpt_ideas_view']['Row']>
+        }
+        product_overview_view: {
+          Row: SetNonNullable<SupabaseDatabase['public']['Views']['product_overview_view']['Row']>
+        }
+        community_post_detail: {
+          Row: SetNonNullable<SupabaseDatabase['public']['Views']['community_post_detail']['Row']>
+        }
       }
     }
   }

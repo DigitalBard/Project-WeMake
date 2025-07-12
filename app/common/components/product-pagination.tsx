@@ -16,7 +16,6 @@ type ProductPaginationProps = {
 export function ProductPagination({ totalPages }: ProductPaginationProps) {
   const [searchParams, setSearchParams] = useSearchParams()
   const currentPage = Number(searchParams.get('page') ?? 1)
-  console.log(currentPage)
 
   return (
     <div>

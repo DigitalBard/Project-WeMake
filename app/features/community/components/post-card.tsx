@@ -4,12 +4,13 @@ import { Button } from '../../../common/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../../../common/components/ui/avatar'
 import { ChevronUpIcon, DotIcon } from 'lucide-react'
 import { cn } from '~/lib/utils'
+import { DateTime } from 'luxon'
 
 interface PostCardProps {
-  id: string
+  id: number
   title: string
   author: string
-  avatarUrl: string
+  avatarUrl: string | null
   category: string
   createdAt: string
   expanded?: boolean
@@ -35,16 +36,16 @@ export function PostCard({
         )}>
         <CardHeader className="flex flex-row items-center gap-2">
           <Avatar className="size-14">
-            <AvatarFallback>{author}</AvatarFallback>
+            <AvatarFallback>{author[0]}</AvatarFallback>
             {avatarUrl && <AvatarImage src={avatarUrl} />}
           </Avatar>
           <div className="space-y-2">
             <CardTitle>{title}</CardTitle>
-            <div className="flex gap-2 text-sm leading-tight text-muted-foreground">
+            <div className="flex gap-1 text-sm leading-tight text-muted-foreground">
               <span>{author}</span>
               <span>on {category}</span>
               <DotIcon className="w-4 h-4" />
-              <span>{createdAt}</span>
+              <span>{DateTime.fromISO(createdAt).toRelative()}</span>
             </div>
           </div>
         </CardHeader>

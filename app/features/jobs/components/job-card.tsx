@@ -2,15 +2,16 @@ import { Link } from 'react-router'
 import { Button } from '../../../common/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../../../common/components/ui/card'
 import { Badge } from '../../../common/components/ui/badge'
+import { DateTime } from 'luxon'
 
 interface JobCardProps {
-  id: string
+  id: number
   companyName: string
   companyLogoUrl: string
   companyHq: string
   title: string
   createdAt: string
-  locationType: string
+  type: string
   positionLocation: string
   salary: string
 }
@@ -22,7 +23,7 @@ export function JobCard({
   companyHq,
   title,
   createdAt,
-  locationType,
+  type,
   positionLocation,
   salary,
 }: JobCardProps) {
@@ -34,14 +35,18 @@ export function JobCard({
             <img src={companyLogoUrl} alt={`${companyName} Logo`} className="size-10 rounded-full" />
             <div className="space-x-2">
               <span className="text-accent-foreground">{companyName}</span>
-              <span className="text-xs text-muted-foreground">{createdAt}</span>
+              <span className="text-xs text-muted-foreground">{DateTime.fromISO(createdAt).toRelative()}</span>
             </div>
           </div>
-          <CardTitle>{title}</CardTitle>
+          <CardTitle className="text-xl font-bold">{title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <Badge variant="outline">{locationType}</Badge>
-          <Badge variant="outline">{positionLocation}</Badge>
+          <Badge variant="outline" className="capitalize">
+            {type}
+          </Badge>
+          <Badge variant="outline" className="capitalize">
+            {positionLocation}
+          </Badge>
         </CardContent>
         <CardFooter className="flex justify-between">
           <div className="flex flex-col">
