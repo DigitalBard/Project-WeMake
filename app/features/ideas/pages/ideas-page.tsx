@@ -2,13 +2,15 @@ import PageHeader from '~/common/components/page-header'
 import type { Route } from './+types/ideas-page'
 import { IdeaCard } from '../components/idea-card'
 import { getGptIdeas } from '../queries'
+import { makeSSRClient } from '~/supa-client'
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'IdeasGPT | wemake' }, { name: 'description', content: 'Find ideas for your next project' }]
 }
 
-export const loader = async () => {
-  const ideas = await getGptIdeas({
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request)
+  const ideas = await getGptIdeas(client, {
     limit: 10,
   })
 

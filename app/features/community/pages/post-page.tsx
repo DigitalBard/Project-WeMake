@@ -15,14 +15,16 @@ import { Badge } from '~/common/components/ui/badge'
 import { Reply } from '../components/reply'
 import { getPostById, getReplies } from '../queries'
 import { DateTime } from 'luxon'
+import { makeSSRClient } from '~/supa-client'
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Discussion | wemake' }, { name: 'description', content: 'Discussion page' }]
 }
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
-  const post = await getPostById(Number(params.postId))
-  const replies = await getReplies(Number(params.postId))
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request)
+  const post = await getPostById(client, { postId: Number(params.postId) })
+  const replies = await getReplies(client, { postId: Number(params.postId) })
   return { post, replies }
 }
 

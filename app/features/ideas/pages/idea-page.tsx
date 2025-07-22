@@ -5,6 +5,7 @@ import type { Route } from './+types/idea-page'
 import PageHeader from '~/common/components/page-header'
 import { getGptIdea } from '../queries'
 import { DateTime } from 'luxon'
+import { makeSSRClient } from '~/supa-client'
 
 export const meta: Route.MetaFunction = ({
   data: {
@@ -17,10 +18,11 @@ export const meta: Route.MetaFunction = ({
   ]
 }
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request)
   const { ideaId } = params
 
-  const idea = await getGptIdea({
+  const idea = await getGptIdea(client, {
     ideaId: Number(ideaId),
   })
 

@@ -59,6 +59,7 @@ export default [
         route('/complete', 'features/auth/pages/social-complete-page.tsx'),
       ]),
     ]),
+    route('/logout', 'features/auth/pages/logout-page.tsx'),
   ]),
   // Community
   ...prefix('/community', [

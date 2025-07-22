@@ -1,12 +1,13 @@
 import { useOutletContext } from 'react-router'
 import type { Route } from './+types/profile-page'
-import client from '~/supa-client'
+import { makeSSRClient } from '~/supa-client'
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Profile | wemake' }, { name: 'description', content: '사용자 프로필 정보' }]
 }
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request)
   await client.rpc('track_event', {
     event_type: 'profile_view',
     event_data: {

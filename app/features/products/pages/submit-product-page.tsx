@@ -12,7 +12,7 @@ export const meta: Route.MetaFunction = () => {
   return [{ title: 'Submit Product | wemake' }, { name: 'description', content: 'Submit your product' }]
 }
 
-export default function SubmitPage({ loaderData, actionData }: Route.ComponentProps) {
+export default function SubmitPage({ loaderData }: Route.ComponentProps) {
   const [icon, setIcon] = useState<string | null>(null)
   const onChangeIcon = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {

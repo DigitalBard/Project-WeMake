@@ -12,7 +12,7 @@ export default function DashboardIdeasPage() {
       <div className="grid grid-cols-3 gap-4">
         {Array.from({ length: 7 }).map((_, index) => (
           <IdeaCard
-            id="ideaId"
+            id={index}
             title="A startup that creates an AI-powered generated personal trainer, deliveering customized fitness recommendations and tracking of progress using a mobile app to track workouts and progress as well as a website to manage the business."
             viewCount={123}
             createdAt="12 hours ago"

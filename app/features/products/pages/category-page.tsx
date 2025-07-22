@@ -4,6 +4,7 @@ import { ProductCard } from '../components/product-card'
 import type { Route } from './+types/category-page'
 import { getCategory, getCategoryPages, getProductsByCategory } from '../queries'
 import { z } from 'zod'
+import { makeSSRClient } from '~/supa-client'
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -17,6 +18,7 @@ const paramsSchema = z.object({
 })
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request)
   const url = new URL(request.url)
   const page = Number(url.searchParams.get('page')) || 1
 
@@ -27,9 +29,9 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   }
 
   const [category, products, totalPages] = await Promise.all([
-    getCategory(data.category),
-    getProductsByCategory({ categoryId: data.category, page: Number(page) }),
-    getCategoryPages({ categoryId: data.category }),
+    getCategory(client, { categoryId: data.category }),
+    getProductsByCategory(client, { categoryId: data.category, page: Number(page) }),
+    getCategoryPages(client, { categoryId: data.category }),
   ])
 
   return { category, products, totalPages }

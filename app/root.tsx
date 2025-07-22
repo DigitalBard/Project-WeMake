@@ -14,6 +14,8 @@ import stylesheet from './app.css?url'
 import Navigation from './common/components/navigation'
 import { Settings } from 'luxon'
 import { cn } from './lib/utils'
+import { makeSSRClient } from './supa-client'
+import { getUserById } from './features/users/queries'
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
@@ -48,19 +50,39 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function App() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request)
+  const {
+    data: { user },
+  } = await client.auth.getUser()
+
+  if (user) {
+    const profile = await getUserById(client, { id: user.id })
+    return { user, profile }
+  } else {
+    return { user: null, profile: null }
+  }
+}
+
+export default function App({ loaderData }: Route.ComponentProps) {
   // 사용자 위치 추적
   const { pathname } = useLocation()
   const navigation = useNavigation()
   const isLoading = navigation.state === 'loading'
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
+  const isLoggedIn = loaderData.user !== null
 
   return (
     <div className={cn({ 'py-28 px-5 lg:px-20': !pathname.includes('/auth/'), 'opacity-50': isLoading })}>
-      {pathname.includes('/auth') ? null : <Navigation isLoggedIn={true} hasNotifications={true} hasMessages={true} />}
+      {pathname.includes('/auth') ? null : (
+        <Navigation
+          isLoggedIn={isLoggedIn}
+          hasNotifications={true}
+          hasMessages={true}
+          name={loaderData.profile?.name}
+          username={loaderData.profile?.username}
+          avatar={loaderData.profile?.avatar}
+        />
+      )}
       <Outlet />
     </div>
   )

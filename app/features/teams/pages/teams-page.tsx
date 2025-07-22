@@ -2,13 +2,15 @@ import PageHeader from '~/common/components/page-header'
 import type { Route } from './+types/teams-page'
 import { TeamCard } from '../components/team-card'
 import { getTeams } from '../queries'
+import { makeSSRClient } from '~/supa-client'
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Teams | wemake' }, { name: 'description', content: '다양한 팀들을 찾아보세요' }]
 }
 
-export const loader = async () => {
-  const teams = await getTeams({
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request)
+  const teams = await getTeams(client, {
     limit: 8,
   })
 

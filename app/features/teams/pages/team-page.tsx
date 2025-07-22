@@ -7,13 +7,15 @@ import { Form } from 'react-router'
 import InputPair from '~/common/components/input-pair'
 import { Card, CardContent, CardHeader, CardTitle } from '~/common/components/ui/card'
 import { getTeamById } from '../queries'
+import { makeSSRClient } from '~/supa-client'
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Team Details | wemake' }, { name: 'description', content: '팀 정보를 확인해보세요' }]
 }
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
-  const team = await getTeamById(Number(params.teamId))
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request)
+  const team = await getTeamById(client, { teamId: Number(params.teamId) })
   return { team }
 }
 

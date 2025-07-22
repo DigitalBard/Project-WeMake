@@ -1,4 +1,4 @@
-import type { Route } from '~/types'
+import type { Route } from './+types/promote-page'
 import { Form, type MetaArgs } from 'react-router'
 import PageHeader from '~/common/components/page-header'
 import SelectPair from '~/common/components/select-pair'
@@ -9,8 +9,8 @@ import type { DateRange } from 'react-day-picker'
 import { DateTime } from 'luxon'
 import { Button } from '~/common/components/ui/button'
 
-export function meta(): Route.MetaFunction {
-  return [{ title: '제품 홍보' }, { name: 'description', content: '제품을 홍보하세요' }]
+export const meta: Route.MetaFunction = () => {
+  return [{ title: 'Promote Your Product' }, { name: 'description', content: "Boost your product's visibility." }]
 }
 
 export default function PromotePage() {
