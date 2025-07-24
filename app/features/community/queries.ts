@@ -92,6 +92,7 @@ export const getReplies = async (client: SupabaseClient<Database>, { postId }: {
     `
     )
     .eq('post_id', postId)
+    .order('created_at', { ascending: false })
   if (error) {
     throw new Error(error.message)
   }

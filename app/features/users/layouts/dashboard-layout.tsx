@@ -10,8 +10,20 @@ import {
   SidebarMenuButton,
   SidebarProvider,
 } from '~/common/components/ui/sidebar'
+import { makeSSRClient } from '~/supa-client'
+import { getLoggedInUserId, getProductsByUserId } from '../queries'
+import type { Route } from './+types/dashboard-layout'
 
-export default function DashboardLayout() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client } = makeSSRClient(request)
+  const userId = await getLoggedInUserId(client)
+  const products = await getProductsByUserId(client, { userId })
+
+  return { userId, products }
+}
+
+export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
+  const { userId, products } = loaderData
   const location = useLocation()
 
   return (
@@ -41,14 +53,18 @@ export default function DashboardLayout() {
           <SidebarGroup>
             <SidebarGroupLabel>Product Analytics</SidebarGroupLabel>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={location.pathname === '/my/dashboard/products'}>
-                  <Link to="/my/dashboard/products/1">
-                    <RocketIcon className="size-4" />
-                    <span>Product 1</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {products.map(product => (
+                <SidebarMenuItem key={product.product_id}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === `/my/dashboard/products/${product.product_id}`}>
+                    <Link to={`/my/dashboard/products/${product.product_id}`}>
+                      <RocketIcon className="size-4" />
+                      <span>{product.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>

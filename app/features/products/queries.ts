@@ -177,6 +177,7 @@ export const getReviews = async (client: SupabaseClient<Database>, { productId }
     `
     )
     .eq('product_id', productId)
+    .order('created_at', { ascending: false })
 
   if (error) {
     throw new Error(error.message)

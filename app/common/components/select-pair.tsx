@@ -7,6 +7,7 @@ export default function SelectPair({
   required,
   label,
   description,
+  defaultValue,
   placeholder,
   options,
 }: {
@@ -14,6 +15,7 @@ export default function SelectPair({
   required: boolean
   label: string
   description: string
+  defaultValue?: string
   placeholder: string
   options: { label: string; value: string }[]
 }) {
@@ -25,7 +27,7 @@ export default function SelectPair({
         {label}
         <small className="text-muted-foreground">{description}</small>
       </Label>
-      <Select name={name} required={required} open={open} onOpenChange={setOpen}>
+      <Select name={name} required={required} open={open} onOpenChange={setOpen} defaultValue={defaultValue}>
         <SelectTrigger>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
