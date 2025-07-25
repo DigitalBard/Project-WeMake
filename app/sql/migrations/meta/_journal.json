@@ -127,6 +127,20 @@
       "when": 1752336852360,
       "tag": "0017_adorable_fallen_one",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1753368028006,
+      "tag": "0018_clever_jack_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1753368192103,
+      "tag": "0019_cultured_ghost_rider",
+      "breakpoints": true
     }
   ]
 }

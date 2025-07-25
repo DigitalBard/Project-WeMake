@@ -23,6 +23,8 @@ export default function ProfilePostsPage({ loaderData }: Route.ComponentProps) {
           avatarUrl={post.author_avatar}
           category={post.topic}
           createdAt={post.created_at}
+          votesCount={post.upvotes}
+          isUpvoted={post.is_upvoted}
           expanded
         />
       ))}
