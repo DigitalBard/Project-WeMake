@@ -169,6 +169,13 @@
       "when": 1754230337070,
       "tag": "0023_redundant_proudstar",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1754233968159,
+      "tag": "0024_fearless_stick",
+      "breakpoints": true
     }
   ]
 }
