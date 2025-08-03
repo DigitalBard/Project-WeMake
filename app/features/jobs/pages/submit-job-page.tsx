@@ -45,7 +45,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     return { fieldErrors: error.flatten().fieldErrors }
   }
 
-  const { job_id } = await createJob(client, data)
+  const { job_id } = await createJob(client, data, userId)
   return redirect(`/jobs/${job_id}`)
 }
 

@@ -3,7 +3,7 @@ import type { z } from 'zod'
 import type { Database } from '~/supa-client'
 import { formSchema } from './pages/submit-job-page'
 
-export const createJob = async (client: SupabaseClient<Database>, data: z.infer<typeof formSchema>) => {
+export const createJob = async (client: SupabaseClient<Database>, data: z.infer<typeof formSchema>, userId: string) => {
   const { data: jobData, error } = await client
     .from('jobs')
     .insert({
@@ -20,6 +20,7 @@ export const createJob = async (client: SupabaseClient<Database>, data: z.infer<
       job_type: data.jobType as 'full-time' | 'part-time' | 'freelance' | 'internship',
       location: data.jobLocation as 'remote' | 'on-site' | 'hybrid',
       salary_range: data.salaryRange,
+      registered_by: userId,
     })
     .select()
     .single()

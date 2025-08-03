@@ -162,6 +162,13 @@
       "when": 1754206513052,
       "tag": "0022_ambitious_roland_deschain",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1754230337070,
+      "tag": "0023_redundant_proudstar",
+      "breakpoints": true
     }
   ]
 }

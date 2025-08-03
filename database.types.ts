@@ -178,6 +178,7 @@ export type Database = {
           overview: string
           position: string
           qualifications: string
+          registered_by: string | null
           responsibilities: string
           salary_range: Database["public"]["Enums"]["salary_range"]
           skills: string
@@ -196,6 +197,7 @@ export type Database = {
           overview: string
           position: string
           qualifications: string
+          registered_by?: string | null
           responsibilities: string
           salary_range: Database["public"]["Enums"]["salary_range"]
           skills: string
@@ -214,12 +216,21 @@ export type Database = {
           overview?: string
           position?: string
           qualifications?: string
+          registered_by?: string | null
           responsibilities?: string
           salary_range?: Database["public"]["Enums"]["salary_range"]
           skills?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "jobs_registered_by_profiles_profile_id_fk"
+            columns: ["registered_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
       }
       message_room_members: {
         Row: {
@@ -274,25 +285,25 @@ export type Database = {
           content: string
           created_at: string
           message_id: number
-          message_room_id: number | null
+          message_room_id: number
           seen: boolean
-          sender_id: string | null
+          sender_id: string
         }
         Insert: {
           content: string
           created_at?: string
           message_id?: never
-          message_room_id?: number | null
+          message_room_id: number
           seen?: boolean
-          sender_id?: string | null
+          sender_id: string
         }
         Update: {
           content?: string
           created_at?: string
           message_id?: never
-          message_room_id?: number | null
+          message_room_id?: number
           seen?: boolean
-          sender_id?: string | null
+          sender_id?: string
         }
         Relationships: [
           {
@@ -791,6 +802,41 @@ export type Database = {
           {
             foreignKeyName: "teams_team_leader_id_profiles_profile_id_fk"
             columns: ["team_leader_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      todos: {
+        Row: {
+          completed: boolean
+          created_at: string
+          profile_id: string
+          title: string
+          todo_id: number
+          updated_at: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          profile_id: string
+          title: string
+          todo_id?: never
+          updated_at?: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          profile_id?: string
+          title?: string
+          todo_id?: never
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todos_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["profile_id"]
