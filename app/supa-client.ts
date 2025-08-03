@@ -1,4 +1,5 @@
 import { createBrowserClient, createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import type { Database as SupabaseDatabase } from 'database.types'
 import type { MergeDeep, SetNonNullable, SetFieldType } from 'type-fest'
 
@@ -23,12 +24,19 @@ export type Database = MergeDeep<
         community_post_detail: {
           Row: SetNonNullable<SupabaseDatabase['public']['Views']['community_post_detail']['Row']>
         }
+        messages_view: {
+          Row: SetNonNullable<SupabaseDatabase['public']['Views']['messages_view']['Row']>
+        }
       }
     }
   }
 >
 
-export const browserCclient = createBrowserClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!)
+// export const browserClient = createBrowserClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!)
+export const browserClient = createBrowserClient<Database>(
+  'https://fxtkbbjahjdaprtkexqy.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4dGtiYmphaGpkYXBydGtleHF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExMTgxMDUsImV4cCI6MjA2NjY5NDEwNX0.ShVRNF0hsjuxYaEPRMCn_Mj-YlyFP5zGcDfV8xivNV4'
+)
 
 export const makeSSRClient = (request: Request) => {
   const headers = new Headers()
@@ -51,3 +59,5 @@ export const makeSSRClient = (request: Request) => {
     headers,
   }
 }
+
+export const adminClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)

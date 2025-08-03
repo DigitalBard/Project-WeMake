@@ -5,3 +5,6 @@
 # React Router
 /.react-router/
 /build/
+
+# React email starter
+/react-email-starter/node_modules/

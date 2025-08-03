@@ -147,3 +147,100 @@ export const countNotifications = async (client: SupabaseClient<Database>, { use
   }
   return count ?? 0
 }
+
+export const getMessages = async (client: SupabaseClient<Database>, { userId }: { userId: string }) => {
+  const { data, error } = await client
+    .from('messages_view')
+    .select('*')
+    .eq('profile_id', userId)
+    .neq('other_profile_id', userId)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}
+
+export const getMessagesByRoomId = async (
+  client: SupabaseClient<Database>,
+  { userId, messageRoomId }: { userId: string; messageRoomId: string }
+) => {
+  const { count, error: countError } = await client
+    .from('message_room_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('message_room_id', Number(messageRoomId))
+    .eq('profile_id', userId)
+  if (countError) {
+    throw new Error(countError.message)
+  }
+  if (count === 0) {
+    throw new Error('Message room not found')
+  }
+
+  const { data, error } = await client
+    .from('messages')
+    .select(`*`)
+    .eq('message_room_id', Number(messageRoomId))
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}
+
+export const getRoomsParticipant = async (
+  client: SupabaseClient<Database>,
+  { userId, messageRoomId }: { userId: string; messageRoomId: string }
+) => {
+  const { count, error: countError } = await client
+    .from('message_room_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('message_room_id', Number(messageRoomId))
+    .eq('profile_id', userId)
+  if (countError) {
+    throw new Error(countError.message)
+  }
+  if (count === 0) {
+    throw new Error('Message room not found')
+  }
+  const { data, error } = await client
+    .from('message_room_members')
+    .select(`profile:profiles!profile_id!inner(name, avatar, profile_id)`)
+    .eq('message_room_id', Number(messageRoomId))
+    .neq('profile_id', userId)
+    .single()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}
+
+export const sendMessageToRoom = async (
+  client: SupabaseClient<Database>,
+  { userId, messageRoomId, message }: { userId: string; messageRoomId: string; message: string }
+) => {
+  const { count, error: countError } = await client
+    .from('message_room_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('message_room_id', Number(messageRoomId))
+    .eq('profile_id', userId)
+
+  if (countError) {
+    throw new Error(countError.message)
+  }
+  if (count === 0) {
+    throw new Error('Message room not found')
+  }
+
+  const { error } = await client.from('messages').insert({
+    message_room_id: Number(messageRoomId),
+    sender_id: userId,
+    content: message,
+  })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}

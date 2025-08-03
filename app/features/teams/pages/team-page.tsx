@@ -74,14 +74,14 @@ export default function TeamPage({ loaderData }: Route.ComponentProps) {
               <Badge variant="secondary">{team.team_leader.role}</Badge>
             </div>
           </div>
-          <Form className="space-y-5">
+          <Form className="space-y-5" action={`/users/${team.team_leader.username}/messages`} method="post">
             <InputPair
               label="Introduce yourself"
               description="Tell us about yourself"
               placeholder="i.e. I'm a React Developer with 3 years of experience."
-              name="introduction"
+              name="content"
               type="text"
-              id="introduction"
+              id="content"
               required
               textArea
             />

@@ -25,6 +25,7 @@ export default [
     route('/search', 'features/products/pages/search-page.tsx'),
     route('/submit', 'features/products/pages/submit-product-page.tsx'),
     route('/promote', 'features/products/pages/promote-page.tsx'),
+    route('/promote/success', 'features/products/pages/promote-success-page.tsx'),
     ...prefix('/:productId', [
       index('features/products/pages/product-redirect-page.tsx'),
       layout('features/products/pages/product-overview-layout.tsx', [
@@ -38,6 +39,7 @@ export default [
   ...prefix('ideas', [
     index('features/ideas/pages/ideas-page.tsx'),
     route('/:ideaId', 'features/ideas/pages/idea-page.tsx'),
+    route('/generate', 'features/ideas/pages/generate-idea-page.tsx'),
   ]),
   // Jobs
   ...prefix('jobs', [
@@ -88,7 +90,7 @@ export default [
     layout('features/users/layouts/messages-layout.tsx', [
       ...prefix('/messages', [
         index('features/users/pages/messages-page.tsx'),
-        route('/:messageId', 'features/users/pages/message-page.tsx'),
+        route('/:messageRoomId', 'features/users/pages/message-page.tsx'),
       ]),
     ]),
   ]),
@@ -98,5 +100,7 @@ export default [
       route('/products', 'features/users/pages/profile-products-page.tsx'),
       route('/posts', 'features/users/pages/profile-posts-page.tsx'),
     ]),
+    route('/messages', 'features/users/pages/send-message-page.tsx'),
+    route('/welcome', 'features/users/pages/welcome-page.tsx'),
   ]),
 ] satisfies RouteConfig
