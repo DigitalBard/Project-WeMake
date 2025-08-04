@@ -41,35 +41,86 @@ export const profiles = pgTable('profiles', {
   updated_at: timestamp().notNull().defaultNow(),
 })
 
-export const follows = pgTable('follows', {
-  follower_id: uuid()
-    .references(() => profiles.profile_id, { onDelete: 'cascade' })
-    .notNull(),
-  following_id: uuid()
-    .references(() => profiles.profile_id, { onDelete: 'cascade' })
-    .notNull(),
-  created_at: timestamp().notNull().defaultNow(),
-})
+export const follows = pgTable(
+  'follows',
+  {
+    follower_id: uuid()
+      .references(() => profiles.profile_id, { onDelete: 'cascade' })
+      .notNull(),
+    following_id: uuid()
+      .references(() => profiles.profile_id, { onDelete: 'cascade' })
+      .notNull(),
+    created_at: timestamp().notNull().defaultNow(),
+  },
+  table => [
+    pgPolicy('follow-select-policy', {
+      for: 'select',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${authUid} = ${table.follower_id}`,
+    }),
+    pgPolicy('follow-insert-policy', {
+      for: 'insert',
+      to: authenticatedRole,
+      as: 'permissive',
+      withCheck: sql`${authUid} = ${table.follower_id}`,
+    }),
+    pgPolicy('follow-delete-policy', {
+      for: 'delete',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${authUid} = ${table.follower_id}`,
+    }),
+  ]
+)
 
 export const notificationTypes = pgEnum('notification_types', ['follow', 'review', 'reply', 'mention'])
 
-export const notifications = pgTable('notifications', {
-  notification_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-  source_id: uuid().references(() => profiles.profile_id, { onDelete: 'cascade' }),
-  product_id: bigint({ mode: 'number' }).references(() => products.product_id, { onDelete: 'cascade' }),
-  post_id: bigint({ mode: 'number' }).references(() => posts.post_id, { onDelete: 'cascade' }),
-  target_id: uuid()
-    .references(() => profiles.profile_id, { onDelete: 'cascade' })
-    .notNull(),
-  seen: boolean().notNull().default(false),
-  type: notificationTypes().notNull(),
-  created_at: timestamp().notNull().defaultNow(),
-})
+export const notifications = pgTable(
+  'notifications',
+  {
+    notification_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    source_id: uuid().references(() => profiles.profile_id, { onDelete: 'cascade' }),
+    product_id: bigint({ mode: 'number' }).references(() => products.product_id, { onDelete: 'cascade' }),
+    post_id: bigint({ mode: 'number' }).references(() => posts.post_id, { onDelete: 'cascade' }),
+    target_id: uuid()
+      .references(() => profiles.profile_id, { onDelete: 'cascade' })
+      .notNull(),
+    seen: boolean().notNull().default(false),
+    type: notificationTypes().notNull(),
+    created_at: timestamp().notNull().defaultNow(),
+  },
+  table => [
+    pgPolicy('notification-select-policy', {
+      for: 'select',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${authUid} = ${table.target_id}`,
+    }),
+  ]
+)
 
-export const messageRooms = pgTable('message_rooms', {
-  message_room_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-  created_at: timestamp().notNull().defaultNow(),
-})
+export const messageRooms = pgTable(
+  'message_rooms',
+  {
+    message_room_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    created_at: timestamp().notNull().defaultNow(),
+  },
+  table => [
+    pgPolicy('message-room-select-policy', {
+      for: 'select',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`true`,
+    }),
+    pgPolicy('message-room-insert-policy', {
+      for: 'insert',
+      to: authenticatedRole,
+      as: 'permissive',
+      withCheck: sql`true`,
+    }),
+  ]
+)
 
 export const messageRoomMembers = pgTable(
   'message_room_members',
@@ -78,21 +129,52 @@ export const messageRoomMembers = pgTable(
     profile_id: uuid().references(() => profiles.profile_id, { onDelete: 'cascade' }),
     created_at: timestamp().notNull().defaultNow(),
   },
-  table => [primaryKey({ columns: [table.message_room_id, table.profile_id] })]
+  table => [
+    primaryKey({ columns: [table.message_room_id, table.profile_id] }),
+    pgPolicy('message-room-member-select-policy', {
+      for: 'select',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${table.message_room_id} IN (SELECT message_room_id FROM public.message_room_members WHERE profile_id = ${authUid})`,
+    }),
+    pgPolicy('message-room-member-insert-policy', {
+      for: 'insert',
+      to: authenticatedRole,
+      as: 'permissive',
+      withCheck: sql`${table.message_room_id} NOT IN (SELECT message_room_id FROM public.message_room_members) AND (${table.profile_id} = ${authUid} OR ${table.message_room_id} = (SELECT message_room_id FROM public.message_room_members WHERE profile_id = ${authUid})`,
+    }),
+  ]
 )
 
-export const messages = pgTable('messages', {
-  message_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-  message_room_id: bigint({ mode: 'number' })
-    .references(() => messageRooms.message_room_id, { onDelete: 'cascade' })
-    .notNull(),
-  sender_id: uuid()
-    .references(() => profiles.profile_id, { onDelete: 'cascade' })
-    .notNull(),
-  content: text().notNull(),
-  seen: boolean().notNull().default(false),
-  created_at: timestamp().notNull().defaultNow(),
-})
+export const messages = pgTable(
+  'messages',
+  {
+    message_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    message_room_id: bigint({ mode: 'number' })
+      .references(() => messageRooms.message_room_id, { onDelete: 'cascade' })
+      .notNull(),
+    sender_id: uuid()
+      .references(() => profiles.profile_id, { onDelete: 'cascade' })
+      .notNull(),
+    content: text().notNull(),
+    seen: boolean().notNull().default(false),
+    created_at: timestamp().notNull().defaultNow(),
+  },
+  table => [
+    pgPolicy('message-select-policy', {
+      for: 'select',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${table.message_room_id} IN (SELECT message_room_id FROM public.message_room_members WHERE profile_id = ${authUid})`,
+    }),
+    pgPolicy('message-insert-policy', {
+      for: 'insert',
+      to: authenticatedRole,
+      as: 'permissive',
+      withCheck: sql`${table.message_room_id} IN (SELECT message_room_id FROM public.message_room_members WHERE profile_id = ${authUid}) AND ${authUid} = ${table.sender_id}`,
+    }),
+  ]
+)
 
 export const todos = pgTable(
   'todos',

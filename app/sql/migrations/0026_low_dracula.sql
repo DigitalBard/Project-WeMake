@@ -1,0 +1,12 @@
+ALTER TABLE "follows" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "message_room_members" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "messages" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "notifications" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+CREATE POLICY "follow-select-policy" ON "follows" AS PERMISSIVE FOR SELECT TO "authenticated" USING ((select auth.uid()) = "follows"."follower_id");--> statement-breakpoint
+CREATE POLICY "follow-insert-policy" ON "follows" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK ((select auth.uid()) = "follows"."follower_id");--> statement-breakpoint
+CREATE POLICY "follow-delete-policy" ON "follows" AS PERMISSIVE FOR DELETE TO "authenticated" USING ((select auth.uid()) = "follows"."follower_id");--> statement-breakpoint
+CREATE POLICY "message-room-member-select-policy" ON "message_room_members" AS PERMISSIVE FOR SELECT TO "authenticated" USING ("message_room_members"."message_room_id" IN (SELECT message_room_id FROM public.message_room_members WHERE profile_id = (select auth.uid())));--> statement-breakpoint
+CREATE POLICY "message-room-member-insert-policy" ON "message_room_members" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK ("message_room_members"."message_room_id" NOT IN (SELECT message_room_id FROM public.message_room_members) AND ("message_room_members"."profile_id" = (select auth.uid())) OR "message_room_members"."message_room_id" = (SELECT message_room_id FROM public.message_room_members WHERE profile_id = (select auth.uid())));--> statement-breakpoint
+CREATE POLICY "message-select-policy" ON "messages" AS PERMISSIVE FOR SELECT TO "authenticated" USING ("messages"."message_room_id" IN (SELECT message_room_id FROM public.message_room_members WHERE profile_id = (select auth.uid())));--> statement-breakpoint
+CREATE POLICY "message-insert-policy" ON "messages" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK ("messages"."message_room_id" IN (SELECT message_room_id FROM public.message_room_members WHERE profile_id = (select auth.uid())) AND (select auth.uid()) = "messages"."sender_id");--> statement-breakpoint
+CREATE POLICY "notification-select-policy" ON "notifications" AS PERMISSIVE FOR SELECT TO "authenticated" USING ((select auth.uid()) = "notifications"."target_id");

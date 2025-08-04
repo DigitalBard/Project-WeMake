@@ -76,8 +76,9 @@ export default function JobsPage({ loaderData }: Route.ComponentProps) {
           <div className="flex flex-col items-start gap-2.5">
             <h4 className="text-sm text-muted-foreground font-bold">Type</h4>
             <div className="flex flex-wrap gap-2">
-              {JOB_TYPES.map(type => (
+              {JOB_TYPES.map((type, idx) => (
                 <Button
+                  key={idx}
                   variant="outline"
                   onClick={() => onFilterClick('type', type.value)}
                   className={cn(type.value === searchParams.get('type') ? 'bg-accent' : '')}>
@@ -89,8 +90,9 @@ export default function JobsPage({ loaderData }: Route.ComponentProps) {
           <div className="flex flex-col items-start gap-2.5">
             <h4 className="text-sm text-muted-foreground font-bold">Location</h4>
             <div className="flex flex-wrap gap-2">
-              {LOCATION_TYPES.map(location => (
+              {LOCATION_TYPES.map((location, idx) => (
                 <Button
+                  key={idx}
                   variant="outline"
                   onClick={() => onFilterClick('location', location.value)}
                   className={cn(location.value === searchParams.get('location') ? 'bg-accent' : '')}>
@@ -102,8 +104,9 @@ export default function JobsPage({ loaderData }: Route.ComponentProps) {
           <div className="flex flex-col items-start gap-2.5">
             <h4 className="text-sm text-muted-foreground font-bold">Salary Range</h4>
             <div className="flex flex-wrap gap-2">
-              {SALARY_RANGE.map(range => (
+              {SALARY_RANGE.map((range, idx) => (
                 <Button
+                  key={idx}
                   variant="outline"
                   onClick={() => onFilterClick('salary', range)}
                   className={cn(range === searchParams.get('salary') ? 'bg-accent' : '')}>

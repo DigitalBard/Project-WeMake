@@ -4,6 +4,7 @@ import {
   foreignKey,
   integer,
   jsonb,
+  pgPolicy,
   pgTable,
   primaryKey,
   text,
@@ -12,6 +13,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import { profiles } from '../users/schema'
 import { sql } from 'drizzle-orm'
+import { authenticatedRole, authUid } from 'drizzle-orm/supabase'
 
 export const products = pgTable(
   'products',
@@ -35,16 +37,52 @@ export const products = pgTable(
       foreignColumns: [profiles.profile_id],
       name: 'products_to_profiles_fk',
     }).onDelete('cascade'),
+    pgPolicy('product-select-policy', {
+      for: 'select',
+      to: 'public',
+      as: 'permissive',
+      using: sql`true`,
+    }),
+    pgPolicy('product-insert-policy', {
+      for: 'insert',
+      to: authenticatedRole,
+      as: 'permissive',
+      withCheck: sql`${authUid} = ${table.profile_id}`,
+    }),
+    pgPolicy('product-update-policy', {
+      for: 'update',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${authUid} = ${table.profile_id}`,
+      withCheck: sql`${authUid} = ${table.profile_id}`,
+    }),
+    pgPolicy('product-delete-policy', {
+      for: 'delete',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${authUid} = ${table.profile_id}`,
+    }),
   ]
 )
 
-export const categories = pgTable('categories', {
-  category_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-  name: text().notNull(),
-  description: text().notNull(),
-  created_at: timestamp().notNull().defaultNow(),
-  updated_at: timestamp().notNull().defaultNow(),
-})
+export const categories = pgTable(
+  'categories',
+  {
+    category_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    name: text().notNull(),
+    description: text().notNull(),
+    created_at: timestamp().notNull().defaultNow(),
+    updated_at: timestamp().notNull().defaultNow(),
+  },
+  () => [
+    pgPolicy('category-select-policy', {
+      for: 'select',
+      to: 'public',
+      as: 'permissive',
+      using: sql`true`,
+    }),
+  ]
+)
 
 export const product_upvotes = pgTable(
   'product_upvotes',
@@ -52,7 +90,27 @@ export const product_upvotes = pgTable(
     product_id: bigint({ mode: 'number' }).references(() => products.product_id, { onDelete: 'cascade' }),
     profile_id: uuid().references(() => profiles.profile_id, { onDelete: 'cascade' }),
   },
-  table => [primaryKey({ columns: [table.product_id, table.profile_id] })]
+  table => [
+    primaryKey({ columns: [table.product_id, table.profile_id] }),
+    pgPolicy('product-upvote-select-policy', {
+      for: 'select',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${authUid} = ${table.profile_id}`,
+    }),
+    pgPolicy('product-upvote-insert-policy', {
+      for: 'insert',
+      to: authenticatedRole,
+      as: 'permissive',
+      withCheck: sql`${authUid} = ${table.profile_id}`,
+    }),
+    pgPolicy('product-upvote-delete-policy', {
+      for: 'delete',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${authUid} = ${table.profile_id}`,
+    }),
+  ]
 )
 
 export const reviews = pgTable(
@@ -70,5 +128,25 @@ export const reviews = pgTable(
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),
   },
-  table => [check('rating_check', sql`${table.rating} BETWEEN 1 AND 5`)]
+  table => [
+    check('rating_check', sql`${table.rating} BETWEEN 1 AND 5`),
+    pgPolicy('review-select-policy', {
+      for: 'select',
+      to: 'public',
+      as: 'permissive',
+      using: sql`true`,
+    }),
+    pgPolicy('review-insert-policy', {
+      for: 'insert',
+      to: authenticatedRole,
+      as: 'permissive',
+      withCheck: sql`${authUid} = ${table.profile_id}`,
+    }),
+    pgPolicy('review-delete-policy', {
+      for: 'delete',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${authUid} = ${table.profile_id}`,
+    }),
+  ]
 )

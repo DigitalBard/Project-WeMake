@@ -1,0 +1,1 @@
+CREATE POLICY "event-insert-policy" ON "events" TO public WITH CHECK ("events"."event_data"->>0 IN (SELECT CAST(product_id AS TEXT) FROM products) OR "events"."event_data"->>0 IN (SELECT username FROM profiles));

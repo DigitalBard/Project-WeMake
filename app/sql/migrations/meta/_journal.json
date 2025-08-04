@@ -176,6 +176,41 @@
       "when": 1754233968159,
       "tag": "0024_fearless_stick",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1754313972357,
+      "tag": "0025_fair_jubilee",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1754319188365,
+      "tag": "0026_low_dracula",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1754320174611,
+      "tag": "0027_fresh_multiple_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1754321475574,
+      "tag": "0028_futuristic_lila_cheney",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1754321739124,
+      "tag": "0029_mighty_micromax",
+      "breakpoints": true
     }
   ]
 }

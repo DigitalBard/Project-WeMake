@@ -56,7 +56,56 @@ export const getJobs = async (
 }
 
 export const getJobById = async (client: SupabaseClient<Database>, { jobId }: { jobId: number }) => {
+  const { data, error } = await client
+    .from('jobs')
+    .select(
+      `
+      job_id,
+      position,
+      overview,
+      responsibilities,
+      qualifications,
+      benefits,
+      skills,
+      company_name,
+      company_logo,
+      company_location,
+      apply_url,
+      job_type,
+      location,
+      salary_range,
+      created_at,
+      updated_at
+    `
+    )
+    .eq('job_id', jobId)
+    .single()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data
+}
+
+// 사용자가 자신이 등록한 채용공고를 관리할 때 사용 (registered_by 포함)
+export const getJobByIdForOwner = async (client: SupabaseClient<Database>, { jobId }: { jobId: number }) => {
   const { data, error } = await client.from('jobs').select('*').eq('job_id', jobId).single()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data
+}
+
+// 사용자가 등록한 채용공고 목록 조회
+export const getJobsByUser = async (client: SupabaseClient<Database>, { userId }: { userId: string }) => {
+  const { data, error } = await client
+    .from('jobs')
+    .select('*')
+    .eq('registered_by', userId)
+    .order('created_at', { ascending: false })
 
   if (error) {
     throw new Error(error.message)
