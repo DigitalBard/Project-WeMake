@@ -135,13 +135,13 @@ export const messageRoomMembers = pgTable(
       for: 'select',
       to: authenticatedRole,
       as: 'permissive',
-      using: sql`${table.message_room_id} IN (SELECT message_room_id FROM public.message_room_members WHERE profile_id = ${authUid})`,
+      using: sql`true`,
     }),
     pgPolicy('message-room-member-insert-policy', {
       for: 'insert',
       to: authenticatedRole,
       as: 'permissive',
-      withCheck: sql`${table.message_room_id} NOT IN (SELECT message_room_id FROM public.message_room_members) AND (${table.profile_id} = ${authUid} OR ${table.message_room_id} = (SELECT message_room_id FROM public.message_room_members WHERE profile_id = ${authUid})`,
+      withCheck: sql`true`,
     }),
   ]
 )
@@ -165,13 +165,13 @@ export const messages = pgTable(
       for: 'select',
       to: authenticatedRole,
       as: 'permissive',
-      using: sql`${table.message_room_id} IN (SELECT message_room_id FROM public.message_room_members WHERE profile_id = ${authUid})`,
+      using: sql`true`,
     }),
     pgPolicy('message-insert-policy', {
       for: 'insert',
       to: authenticatedRole,
       as: 'permissive',
-      withCheck: sql`${table.message_room_id} IN (SELECT message_room_id FROM public.message_room_members WHERE profile_id = ${authUid}) AND ${authUid} = ${table.sender_id}`,
+      withCheck: sql`${table.sender_id} = ${authUid}`,
     }),
   ]
 )

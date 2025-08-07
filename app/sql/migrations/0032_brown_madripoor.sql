@@ -1,0 +1,2 @@
+ALTER POLICY "message-select-policy" ON "messages" TO authenticated USING (true);--> statement-breakpoint
+ALTER POLICY "message-insert-policy" ON "messages" TO authenticated WITH CHECK ("messages"."sender_id" = (select auth.uid()));

@@ -1,0 +1,2 @@
+ALTER POLICY "message-room-member-select-policy" ON "message_room_members" TO authenticated USING (true);--> statement-breakpoint
+ALTER POLICY "message-room-member-insert-policy" ON "message_room_members" TO authenticated WITH CHECK (true);
