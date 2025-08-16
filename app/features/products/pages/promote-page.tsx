@@ -1,5 +1,4 @@
 import type { Route } from './+types/promote-page'
-import { Form, type MetaArgs } from 'react-router'
 import PageHeader from '~/common/components/page-header'
 import SelectPair from '~/common/components/select-pair'
 import { Calendar } from '~/common/components/ui/calendar'
@@ -21,11 +20,11 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const userId = await getLoggedInUserId(client)
 
   const products = await getProductsByUserId(client, { userId })
-  return { products }
+  return { products, userId }
 }
 
 export default function PromotePage({ loaderData }: Route.ComponentProps) {
-  const { products } = loaderData
+  const { products, userId } = loaderData
   const [promotionPeriod, setPromotionPeriod] = useState<DateRange | undefined>()
   const totalDays =
     promotionPeriod?.from && promotionPeriod.to
@@ -40,7 +39,7 @@ export default function PromotePage({ loaderData }: Route.ComponentProps) {
       initeToss.current = true
       const toss = await loadTossPayments('test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm')
       widgets.current = await toss.widgets({
-        customerKey: '111111',
+        customerKey: userId,
       })
       await widgets.current.setAmount({
         value: 0,
