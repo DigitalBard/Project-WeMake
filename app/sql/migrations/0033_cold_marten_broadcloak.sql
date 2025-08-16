@@ -1,0 +1,1 @@
+CREATE POLICY "notification-update-policy" ON "notifications" AS PERMISSIVE FOR UPDATE TO "authenticated" USING ((select auth.uid()) = "notifications"."target_id") WITH CHECK ((select auth.uid()) = "notifications"."target_id");

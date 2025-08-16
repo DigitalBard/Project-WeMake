@@ -97,6 +97,13 @@ export const notifications = pgTable(
       as: 'permissive',
       using: sql`${authUid} = ${table.target_id}`,
     }),
+    pgPolicy('notification-update-policy', {
+      for: 'update',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${authUid} = ${table.target_id}`,
+      withCheck: sql`${authUid} = ${table.target_id}`,
+    }),
   ]
 )
 
