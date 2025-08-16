@@ -10,6 +10,7 @@ import { browserClient, makeSSRClient, type Database } from '~/supa-client'
 import { getLoggedInUserId, getMessagesByRoomId, getRoomsParticipant, sendMessageToRoom } from '../queries'
 import z from 'zod'
 import { useEffect, useRef, useState } from 'react'
+import { DateTime } from 'luxon'
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: '메시지 상세' }, { name: 'description', content: '메시지 상세 내용' }]
@@ -47,6 +48,11 @@ export default function MessagePage({ loaderData, actionData }: Route.ComponentP
   const { userId, name, avatar } = useOutletContext<{ userId: string; name: string; avatar: string }>()
   const formRef = useRef<HTMLFormElement>(null)
   const [messages, setMessages] = useState(loaderData.messages)
+  const bottomRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   useEffect(() => {
     if (actionData?.ok) {
@@ -84,13 +90,15 @@ export default function MessagePage({ loaderData, actionData }: Route.ComponentP
             <AvatarImage src={participant.profile.avatar ?? ''} />
             <AvatarFallback>{participant.profile.name[0]}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col gap-0">
+          <div className="flex flex-col gap-1">
             <CardTitle>{participant.profile.name}</CardTitle>
-            <CardDescription>2 minutes ago</CardDescription>
+            <CardDescription>
+              {DateTime.fromISO(messages[messages.length - 1].created_at, { zone: 'utc' }).toRelative()}
+            </CardDescription>
           </div>
         </CardHeader>
       </Card>
-      <div className="py-10 overflow-y-scroll space-y-4 flex flex-col justify-start h-full">
+      <div className="py-10 overflow-y-scroll gap-4 flex flex-col justify-start h-full">
         {messages.map(message => (
           <MessageBubble
             key={message.message_id}
@@ -98,6 +106,8 @@ export default function MessagePage({ loaderData, actionData }: Route.ComponentP
             fallback={message.sender_id === userId ? name[0] : participant.profile.name[0]}
             content={message.content}
             isCurrentUser={message.sender_id === userId}
+            isLastMessage={message.message_id === messages[messages.length - 1].message_id}
+            ref={bottomRef}
           />
         ))}
       </div>
