@@ -58,7 +58,9 @@ export function Reply({ name, username, avatarUrl, content, createdAt, topLevel,
               <h4 className="font-medium">{name}</h4>
             </Link>
             <DotIcon className="size-5" />
-            <span className="text-xs text-muted-foreground">{DateTime.fromISO(createdAt).toRelative()}</span>
+            <span className="text-xs text-muted-foreground">
+              {DateTime.fromISO(createdAt, { zone: 'utc' }).toRelative()}
+            </span>
           </div>
           <p className="text-muted-foreground">{content}</p>
           {isLoggedIn && (

@@ -35,7 +35,9 @@ export function JobCard({
             <img src={companyLogoUrl} alt={`${companyName} Logo`} className="size-10 rounded-full" />
             <div className="space-x-2">
               <span className="text-accent-foreground">{companyName}</span>
-              <span className="text-xs text-muted-foreground">{DateTime.fromISO(createdAt).toRelative()}</span>
+              <span className="text-xs text-muted-foreground">
+                {DateTime.fromISO(createdAt, { zone: 'utc' }).toRelative()}
+              </span>
             </div>
           </div>
           <CardTitle className="text-xl font-bold">{title}</CardTitle>

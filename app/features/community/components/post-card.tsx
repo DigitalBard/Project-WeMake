@@ -55,7 +55,7 @@ export function PostCard({
               <span>{author}</span>
               <span>on {category}</span>
               <DotIcon className="w-4 h-4" />
-              <span>{DateTime.fromISO(createdAt).toRelative()}</span>
+              <span>{DateTime.fromISO(createdAt, { zone: 'utc' }).toRelative()}</span>
             </div>
           </div>
         </CardHeader>

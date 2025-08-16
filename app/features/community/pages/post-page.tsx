@@ -111,7 +111,7 @@ export default function PostPage({ loaderData, actionData }: Route.ComponentProp
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <span>{post.author_name}</span>
                   <DotIcon className="size-5" />
-                  <span>{DateTime.fromISO(post.created_at).toRelative()}</span>
+                  <span>{DateTime.fromISO(post.created_at, { zone: 'utc' }).toRelative()}</span>
                   <DotIcon className="size-5" />
                   <span>
                     {post.replies} {post.replies === 1 ? 'reply' : 'replies'}
@@ -175,7 +175,7 @@ export default function PostPage({ loaderData, actionData }: Route.ComponentProp
             </div>
           </div>
           <div className="flex flex-col gap-2 text-sm">
-            <span>🎂 Joined {DateTime.fromISO(post.author_created_at).toRelative()}</span>
+            <span>🎂 Joined {DateTime.fromISO(post.author_created_at, { zone: 'utc' }).toRelative()}</span>
             <span>🚀 Launched {post.products} products</span>
           </div>
           <Button variant="outline" className="w-full">

@@ -37,7 +37,7 @@ export function IdeaCard({ id, title, owner, viewCount, createdAt, upvoteCount, 
             <span>{viewCount}</span>
           </div>
           <DotIcon className="w-4 h-4" />
-          <span>{createdAt ? DateTime.fromISO(createdAt).toRelative() : null}</span>
+          <span>{createdAt ? DateTime.fromISO(createdAt, { zone: 'utc' }).toRelative() : null}</span>
         </CardContent>
       )}
       <CardFooter className="flex justify-end gap-2">

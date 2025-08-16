@@ -69,7 +69,7 @@ export default function IdeaPage({ loaderData }: Route.ComponentProps) {
             <span>{idea.views}</span>
           </div>
           <DotIcon className="w-4 h-4" />
-          <span>{DateTime.fromISO(idea.created_at).toRelative()}</span>
+          <span>{DateTime.fromISO(idea.created_at, { zone: 'utc' }).toRelative()}</span>
           <DotIcon className="w-4 h-4" />
           <Button variant="outline">
             <HeartIcon className="w-4 h-4" />

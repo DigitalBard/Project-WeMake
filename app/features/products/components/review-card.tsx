@@ -33,7 +33,7 @@ export function ReviewCard({ avatarUrl, name, username, rating, content, created
         ))}
       </div>
       <p className="text-sm text-muted-foreground">{content}</p>
-      <span className="text-xs text-muted-foreground">{DateTime.fromISO(createdAt).toRelative()}</span>
+      <span className="text-xs text-muted-foreground">{DateTime.fromISO(createdAt, { zone: 'utc' }).toRelative()}</span>
     </div>
   )
 }

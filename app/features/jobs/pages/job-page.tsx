@@ -87,7 +87,7 @@ export default function JobPage({ loaderData }: Route.ComponentProps) {
           </div>
           <div className="flex items-center">
             <span className="text-sm text-muted-foreground">
-              Posted {DateTime.fromISO(job.created_at).toRelative()}
+              Posted {DateTime.fromISO(job.created_at, { zone: 'utc' }).toRelative()}
             </span>
             <DotIcon className="size-4" />
             <span className="text-sm text-muted-foreground">395 views</span>

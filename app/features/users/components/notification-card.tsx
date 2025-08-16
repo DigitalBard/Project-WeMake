@@ -73,7 +73,9 @@ export function NotificationCard({
               </Button>
             )}
           </CardTitle>
-          <small className="text-sm text-muted-foreground">{DateTime.fromISO(time).toRelative()}</small>
+          <small className="text-sm text-muted-foreground">
+            {DateTime.fromISO(time, { zone: 'utc' }).toRelative()}
+          </small>
         </div>
       </CardHeader>
       <CardFooter className="flex justify-end">
