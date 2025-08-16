@@ -9,12 +9,23 @@ import type { DateRange } from 'react-day-picker'
 import { DateTime } from 'luxon'
 import { Button } from '~/common/components/ui/button'
 import { loadTossPayments, type TossPaymentsWidgets } from '@tosspayments/tosspayments-sdk'
+import { makeSSRClient } from '~/supa-client'
+import { getLoggedInUserId, getProductsByUserId } from '~/features/users/queries'
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Promote Your Product' }, { name: 'description', content: "Boost your product's visibility." }]
 }
 
-export default function PromotePage() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client } = makeSSRClient(request)
+  const userId = await getLoggedInUserId(client)
+
+  const products = await getProductsByUserId(client, { userId })
+  return { products }
+}
+
+export default function PromotePage({ loaderData }: Route.ComponentProps) {
+  const { products } = loaderData
   const [promotionPeriod, setPromotionPeriod] = useState<DateRange | undefined>()
   const totalDays =
     promotionPeriod?.from && promotionPeriod.to
@@ -91,16 +102,10 @@ export default function PromotePage() {
             name="product"
             label="Select a Product"
             description="Select the product you want to promote."
-            options={[
-              {
-                label: 'AI Dark Mode Maker',
-                value: 'ai-dark-mode-maker',
-              },
-              {
-                label: 'AI White Mode Maker',
-                value: 'ai-white-mode-maker',
-              },
-            ]}
+            options={products.map(product => ({
+              label: product.name,
+              value: product.name,
+            }))}
             required
             placeholder="Select a Product"
           />
