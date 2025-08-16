@@ -28,6 +28,9 @@ export function ReviewCard({ avatarUrl, name, username, rating, content, created
         {Array.from({ length: rating }).map((_, index) => (
           <StarIcon key={index} className="size-4 text-yellow-400" fill="currentColor" />
         ))}
+        {Array.from({ length: 5 - rating }).map((_, index) => (
+          <StarIcon key={index} className="size-4 text-yellow-400" fill="none" />
+        ))}
       </div>
       <p className="text-sm text-muted-foreground">{content}</p>
       <span className="text-xs text-muted-foreground">{DateTime.fromISO(createdAt).toRelative()}</span>
