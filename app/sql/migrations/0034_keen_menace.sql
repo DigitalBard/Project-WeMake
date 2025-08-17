@@ -1,0 +1,1 @@
+ALTER POLICY "event-insert-policy" ON "events" TO public WITH CHECK ("events"."event_data"->>'product_id' IN (SELECT product_id::text FROM products) OR "events"."event_data"->>'username' IN (SELECT username FROM profiles));

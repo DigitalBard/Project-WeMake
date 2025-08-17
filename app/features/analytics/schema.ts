@@ -23,7 +23,7 @@ export const events = pgTable(
       for: 'insert',
       to: 'public',
       as: 'permissive',
-      withCheck: sql`${table.event_data}->>0 IN (SELECT CAST(product_id AS TEXT) FROM products) OR ${table.event_data}->>0 IN (SELECT username FROM profiles)`,
+      withCheck: sql`${table.event_data}->>'product_id' IN (SELECT product_id::text FROM products) OR ${table.event_data}->>'username' IN (SELECT username FROM profiles)`,
     }),
   ]
 )
