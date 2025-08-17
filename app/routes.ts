@@ -28,7 +28,7 @@ export default [
     route('/promote/success', 'features/products/pages/promote-success-page.tsx'),
     ...prefix('/:productId', [
       index('features/products/pages/product-redirect-page.tsx'),
-      layout('features/products/pages/product-overview-layout.tsx', [
+      layout('features/products/layouts/product-overview-layout.tsx', [
         route('/overview', 'features/products/pages/product-overview-page.tsx'),
         route('/reviews', 'features/products/pages/product-reviews-page.tsx'),
       ]),

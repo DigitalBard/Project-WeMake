@@ -14,7 +14,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
 }
 
 export const loader = async ({ request, params }: Route.LoaderArgs & { params: { productId: string } }) => {
-  const { client, headers } = makeSSRClient(request)
+  const { client } = makeSSRClient(request)
   const product = await getProductById(client, { productId: Number(params.productId) })
   return { product }
 }
