@@ -1,18 +1,36 @@
 import { useOutletContext } from 'react-router'
 import type { Route } from './+types/product-overview-page'
 import { makeSSRClient } from '~/supa-client'
+import { getLoggedInUserId, getProductsByUserId } from '~/features/users/queries'
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
-  const { client, headers } = makeSSRClient(request)
-  await client.rpc('track_event', {
-    event_type: 'product_view',
-    event_data: {
-      product_id: params.productId,
-    },
-  })
+  const { client } = makeSSRClient(request)
+  const {
+    data: { user },
+  } = await client.auth.getUser()
+
+  if (!user) {
+    await client.rpc('track_event', {
+      event_type: 'product_view',
+      event_data: {
+        product_id: params.productId,
+      },
+    })
+  } else {
+    const myProducts = await getProductsByUserId(client, { userId: user.id })
+    const myProductIds = myProducts.map(product => product.product_id)
+    if (!myProductIds.includes(Number(params.productId))) {
+      await client.rpc('track_event', {
+        event_type: 'product_view',
+        event_data: {
+          product_id: params.productId,
+        },
+      })
+    }
+  }
 }
 
-export default function ProductOverviewPage({ params: { productId } }: Route.ComponentProps) {
+export default function ProductOverviewPage() {
   const { description, how_it_works } = useOutletContext<{ description: string; how_it_works: string }>()
 
   return (
