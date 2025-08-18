@@ -1,5 +1,7 @@
 create or replace function track_event(event_type event_types, event_data jsonb)
-returns void as $$
+returns void
+SET search_path = ''
+as $$
 begin
   insert into events (event_type, event_data) values (event_type, event_data);
 end;
