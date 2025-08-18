@@ -3,7 +3,8 @@ import { PAGE_SIZE } from './constants'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '~/supa-client'
 
-export const productListSelect = `product_id, name, tagline, upvotes:stats->>upvotes, views:stats->>views, reviews:stats->>reviews`
+export const productListSelect = `product_id, name, tagline, upvotes:stats->>upvotes, views:stats->>views, reviews:stats->>reviews, 
+upvoters:product_upvotes(profile_id)`
 
 export const getProductsByDateRange = async (
   client: SupabaseClient<Database>,
@@ -203,4 +204,21 @@ export const getProductsByUserId = async (client: SupabaseClient<Database>, { us
   }
 
   return data
+}
+
+export const getIsProductUpvoted = async (
+  client: SupabaseClient<Database>,
+  { productId, userId }: { productId: number; userId: string }
+) => {
+  const { count } = await client
+    .from('product_upvotes')
+    .select('*', { count: 'exact', head: true })
+    .eq('product_id', productId)
+    .eq('profile_id', userId)
+
+  if (count === 0) {
+    return false
+  }
+
+  return true
 }

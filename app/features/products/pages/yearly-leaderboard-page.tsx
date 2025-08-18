@@ -28,7 +28,7 @@ const paramsSchema = z.object({
 })
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
-  const { client, headers } = makeSSRClient(request)
+  const { client } = makeSSRClient(request)
   const { success, data: parsedData } = paramsSchema.safeParse(params)
 
   if (!success) {
@@ -85,15 +85,20 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     endDate: date.endOf('year'),
   })
 
+  const {
+    data: { user },
+  } = await client.auth.getUser()
+
   return {
     products,
     totalPages,
+    user,
     ...parsedData,
   }
 }
 
 export default function YearlyLeaderboardPage({ loaderData }: Route.ComponentProps) {
-  const { products, totalPages } = loaderData
+  const { products, totalPages, user } = loaderData
 
   const urlDate = DateTime.fromObject({ year: loaderData.year })
   const previousYear = urlDate.minus({ years: 1 })
@@ -134,7 +139,8 @@ export default function YearlyLeaderboardPage({ loaderData }: Route.ComponentPro
             description={product.tagline}
             reviewsCount={product.reviews}
             viewCount={product.views}
-            upvoteCount={product.upvotes}
+            upvoteCount={Number(product.upvotes)}
+            isUpvoted={user ? product.upvoters.some(upvoter => upvoter.profile_id === user.id) : false}
           />
         ))}
       </div>

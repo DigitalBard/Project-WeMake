@@ -12,7 +12,11 @@ export const meta: Route.MetaFunction = () => {
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const { client, headers } = makeSSRClient(request)
+  const { client } = makeSSRClient(request)
+  const {
+    data: { user },
+  } = await client.auth.getUser()
+
   const [dailyProducts, weeklyProducts, monthlyProducts, yearlyProducts] = await Promise.all([
     getProductsByDateRange(client, {
       startDate: DateTime.now().startOf('day'),
@@ -36,11 +40,11 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     }),
   ])
 
-  return { dailyProducts, weeklyProducts, monthlyProducts, yearlyProducts }
+  return { dailyProducts, weeklyProducts, monthlyProducts, yearlyProducts, user }
 }
 
 export default function LeaderboardPage({ loaderData }: Route.ComponentProps) {
-  const { dailyProducts, weeklyProducts, monthlyProducts, yearlyProducts } = loaderData
+  const { dailyProducts, weeklyProducts, monthlyProducts, yearlyProducts, user } = loaderData
 
   return (
     <div className="space-y-20">
@@ -59,7 +63,8 @@ export default function LeaderboardPage({ loaderData }: Route.ComponentProps) {
             description={product.tagline}
             reviewsCount={product.reviews}
             viewCount={product.views}
-            upvoteCount={product.upvotes}
+            upvoteCount={Number(product.upvotes)}
+            isUpvoted={user ? product.upvoters.some(upvoter => upvoter.profile_id === user.id) : false}
           />
         ))}
         <Button variant="link" asChild className="text-lg self-center">
@@ -80,7 +85,8 @@ export default function LeaderboardPage({ loaderData }: Route.ComponentProps) {
             description={product.tagline}
             reviewsCount={product.reviews}
             viewCount={product.views}
-            upvoteCount={product.upvotes}
+            upvoteCount={Number(product.upvotes)}
+            isUpvoted={user ? product.upvoters.some(upvoter => upvoter.profile_id === user.id) : false}
           />
         ))}
         <Button variant="link" asChild className="text-lg self-center">
@@ -101,7 +107,8 @@ export default function LeaderboardPage({ loaderData }: Route.ComponentProps) {
             description={product.tagline}
             reviewsCount={product.reviews}
             viewCount={product.views}
-            upvoteCount={product.upvotes}
+            upvoteCount={Number(product.upvotes)}
+            isUpvoted={user ? product.upvoters.some(upvoter => upvoter.profile_id === user.id) : false}
           />
         ))}
         <Button variant="link" asChild className="text-lg self-center">
@@ -122,7 +129,8 @@ export default function LeaderboardPage({ loaderData }: Route.ComponentProps) {
             description={product.tagline}
             reviewsCount={product.reviews}
             viewCount={product.views}
-            upvoteCount={product.upvotes}
+            upvoteCount={Number(product.upvotes)}
+            isUpvoted={user ? product.upvoters.some(upvoter => upvoter.profile_id === user.id) : false}
           />
         ))}
         <Button variant="link" asChild className="text-lg self-center">

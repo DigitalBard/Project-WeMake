@@ -1,5 +1,5 @@
-import { ChevronUpIcon, StarIcon } from 'lucide-react'
-import { Link, NavLink, Outlet } from 'react-router'
+import { Heart, StarIcon } from 'lucide-react'
+import { Link, NavLink, Outlet, useFetcher } from 'react-router'
 import { Button, buttonVariants } from '~/common/components/ui/button'
 import type { Route } from './+types/product-overview-layout'
 import { cn } from '~/lib/utils'
@@ -21,6 +21,18 @@ export const loader = async ({ request, params }: Route.LoaderArgs & { params: {
 
 export default function ProductOverviewLayout({ loaderData }: Route.ComponentProps) {
   const { product } = loaderData
+  const fetcher = useFetcher()
+  const optimisticUpvoteCount =
+    fetcher.state === 'idle'
+      ? product.upvotes
+      : product.is_upvoted
+      ? Number(product.upvotes) - 1
+      : Number(product.upvotes) + 1
+  const optimisticIsUpvoted = fetcher.state === 'idle' ? product.is_upvoted : !product.is_upvoted
+  const absorbClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    fetcher.submit(null, { method: 'post', action: `/products/${product.product_id}/upvote` })
+  }
 
   return (
     <div className="space-y-10">
@@ -49,9 +61,9 @@ export default function ProductOverviewLayout({ loaderData }: Route.ComponentPro
           <Button variant={'secondary'} size={'lg'} className="text-lg h-14 px-10" asChild>
             <Link to={`/products/${product.product_id}/visit`}>Visit Website</Link>
           </Button>
-          <Button size={'lg'} className="text-lg h-14 px-10">
-            <ChevronUpIcon className="size-4" />
-            Upvote ({product.upvotes})
+          <Button size={'lg'} className="text-lg h-14 px-10" onClick={absorbClick}>
+            <Heart className={cn('size-4', optimisticIsUpvoted ? 'fill-red-500' : '')} />
+            Upvote ({optimisticUpvoteCount})
           </Button>
         </div>
       </div>

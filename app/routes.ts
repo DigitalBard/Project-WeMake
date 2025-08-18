@@ -33,6 +33,7 @@ export default [
         route('/reviews', 'features/products/pages/product-reviews-page.tsx'),
       ]),
       route('/visit', 'features/products/pages/product-visit-page.tsx'),
+      route('/upvote', 'features/products/pages/upvote-product-page.tsx'),
     ]),
   ]),
   // Ideas

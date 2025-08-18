@@ -1,7 +1,8 @@
-import { Link } from 'react-router'
+import { Link, useFetcher } from 'react-router'
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '../../../common/components/ui/card'
 import { ChevronUpIcon, EyeIcon, MessageCircleIcon } from 'lucide-react'
 import { Button } from '../../../common/components/ui/button'
+import { cn } from '~/lib/utils'
 
 interface ProductCardProps {
   id: number
@@ -9,10 +10,30 @@ interface ProductCardProps {
   description: string
   reviewsCount: string
   viewCount: string
-  upvoteCount: string
+  upvoteCount: number
+  isUpvoted?: boolean
 }
 
-export function ProductCard({ id, name, description, reviewsCount, viewCount, upvoteCount }: ProductCardProps) {
+export function ProductCard({
+  id,
+  name,
+  description,
+  reviewsCount,
+  viewCount,
+  upvoteCount,
+  isUpvoted = false,
+}: ProductCardProps) {
+  const fetcher = useFetcher()
+  const optimisticUpvoteCount = fetcher.state === 'idle' ? upvoteCount : isUpvoted ? upvoteCount - 1 : upvoteCount + 1
+  const optimisticIsUpvoted = fetcher.state === 'idle' ? isUpvoted : !isUpvoted
+  const absorbClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    fetcher.submit(null, {
+      method: 'POST',
+      action: `/products/${id}/upvote`,
+    })
+  }
+
   return (
     <Link to={`/products/${id}`} className="block">
       <Card className="w-full flex items-center justify-between bg-transparent hover:bg-card/50">
@@ -31,9 +52,12 @@ export function ProductCard({ id, name, description, reviewsCount, viewCount, up
           </div>
         </CardHeader>
         <CardFooter className="py-0">
-          <Button variant="outline" className="flex flex-col h-14">
+          <Button
+            variant="outline"
+            className={cn('flex flex-col h-14', optimisticIsUpvoted ? 'bg-primary text-primary-foreground' : '')}
+            onClick={absorbClick}>
             <ChevronUpIcon className="size-4 shrink-0" />
-            <span>{upvoteCount}</span>
+            <span>{optimisticUpvoteCount}</span>
           </Button>
         </CardFooter>
       </Card>

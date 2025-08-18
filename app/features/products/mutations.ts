@@ -60,3 +60,28 @@ export const createProduct = async (
 
   return data.product_id
 }
+
+export const toggleUpvote = async (
+  client: SupabaseClient<Database>,
+  { productId, userId }: { productId: number; userId: string }
+) => {
+  const { count } = await client
+    .from('product_upvotes')
+    .select('*', { count: 'exact', head: true })
+    .eq('product_id', productId)
+    .eq('profile_id', userId)
+  if (count === 0) {
+    const { error } = await client.from('product_upvotes').insert({
+      product_id: productId,
+      profile_id: userId,
+    })
+    if (error) {
+      throw new Error(error.message)
+    }
+  } else {
+    const { error } = await client.from('product_upvotes').delete().eq('product_id', productId).eq('profile_id', userId)
+    if (error) {
+      throw new Error(error.message)
+    }
+  }
+}
