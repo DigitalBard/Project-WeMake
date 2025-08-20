@@ -71,11 +71,13 @@ export default [
     route('/:postId/upvote', 'features/community/pages/upvote-post-page.tsx'),
     route('/submit', 'features/community/pages/submit-post-page.tsx'),
   ]),
+  // Teams
   ...prefix('/teams', [
     index('features/teams/pages/teams-page.tsx'),
     route('/:teamId', 'features/teams/pages/team-page.tsx'),
     route('/create', 'features/teams/pages/submit-team-page.tsx'),
   ]),
+  // My
   ...prefix('/my', [
     layout('features/users/layouts/dashboard-layout.tsx', [
       ...prefix('/dashboard', [
@@ -95,13 +97,17 @@ export default [
       ]),
     ]),
   ]),
+  // Users
   ...prefix('/users/:username', [
     layout('features/users/layouts/profile-layout.tsx', [
       index('features/users/pages/profile-page.tsx'),
       route('/products', 'features/users/pages/profile-products-page.tsx'),
       route('/posts', 'features/users/pages/profile-posts-page.tsx'),
+      route('/followers', 'features/users/pages/profile-followers-page.tsx'),
+      route('/following', 'features/users/pages/profile-following-page.tsx'),
     ]),
     route('/messages', 'features/users/pages/send-message-page.tsx'),
     route('/welcome', 'features/users/pages/welcome-page.tsx'),
+    route('/follow', 'features/users/pages/follow-page.tsx'),
   ]),
 ] satisfies RouteConfig

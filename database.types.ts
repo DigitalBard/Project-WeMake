@@ -872,6 +872,7 @@ export type Database = {
           author_created_at: string | null
           author_name: string | null
           author_role: Database["public"]["Enums"]["role"] | null
+          author_username: string | null
           content: string | null
           created_at: string | null
           is_upvoted: boolean | null

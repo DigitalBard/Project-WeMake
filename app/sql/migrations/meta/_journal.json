@@ -246,6 +246,20 @@
       "when": 1755413164423,
       "tag": "0034_keen_menace",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1755624749130,
+      "tag": "0035_slimy_bishop",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1755700740644,
+      "tag": "0036_oval_blackheart",
+      "breakpoints": true
     }
   ]
 }

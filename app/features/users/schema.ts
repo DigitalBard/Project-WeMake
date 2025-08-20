@@ -53,11 +53,12 @@ export const follows = pgTable(
     created_at: timestamp().notNull().defaultNow(),
   },
   table => [
+    primaryKey({ columns: [table.follower_id, table.following_id] }),
     pgPolicy('follow-select-policy', {
       for: 'select',
-      to: authenticatedRole,
+      to: 'public',
       as: 'permissive',
-      using: sql`${authUid} = ${table.follower_id}`,
+      using: sql`true`,
     }),
     pgPolicy('follow-insert-policy', {
       for: 'insert',

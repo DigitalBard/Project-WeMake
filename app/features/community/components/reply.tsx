@@ -93,7 +93,7 @@ export function Reply({ name, username, avatarUrl, content, createdAt, topLevel,
         </div>
       )}
       {topLevel && replies && (
-        <div className="pl-10 w-full">
+        <div className="pl-10 w-full flex flex-col gap-5">
           {replies.map(reply => (
             <Reply
               key={reply.post_reply_id}

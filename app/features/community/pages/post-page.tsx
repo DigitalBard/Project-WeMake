@@ -17,7 +17,7 @@ import { getPostById, getReplies } from '../queries'
 import { DateTime } from 'luxon'
 import { makeSSRClient } from '~/supa-client'
 import { z } from 'zod'
-import { getLoggedInUserId } from '~/features/users/queries'
+import { getLoggedInUserId, getFollowingById } from '~/features/users/queries'
 import { createReply } from '../mutations'
 import { useEffect, useRef } from 'react'
 import { cn } from '~/lib/utils'
@@ -27,10 +27,14 @@ export const meta: Route.MetaFunction = () => {
 }
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
-  const { client, headers } = makeSSRClient(request)
+  const { client } = makeSSRClient(request)
+  const {
+    data: { user },
+  } = await client.auth.getUser()
   const post = await getPostById(client, { postId: Number(params.postId) })
   const replies = await getReplies(client, { postId: Number(params.postId) })
-  return { post, replies }
+  const followingOfUser = await getFollowingById(client, { userId: user?.id ?? null })
+  return { post, replies, followingOfUser }
 }
 
 const formSchema = z.object({
@@ -56,7 +60,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
 
 export default function PostPage({ loaderData, actionData }: Route.ComponentProps) {
   const fetcher = useFetcher()
-  const { post, replies } = loaderData
+  const { post, replies, followingOfUser } = loaderData
   const { isLoggedIn, name, username, avatar } = useOutletContext<{
     isLoggedIn: boolean
     name?: string
@@ -64,6 +68,11 @@ export default function PostPage({ loaderData, actionData }: Route.ComponentProp
     avatar?: string
   }>()
   const formRef = useRef<HTMLFormElement>(null)
+
+  const handleFollow = (e: React.MouseEvent<HTMLButtonElement>, username: string) => {
+    e.preventDefault()
+    fetcher.submit(null, { method: 'post', action: `/users/${username}/follow` })
+  }
 
   useEffect(() => {
     if (actionData?.success) {
@@ -178,9 +187,16 @@ export default function PostPage({ loaderData, actionData }: Route.ComponentProp
             <span>🎂 Joined {DateTime.fromISO(post.author_created_at, { zone: 'utc' }).toRelative()}</span>
             <span>🚀 Launched {post.products} products</span>
           </div>
-          <Button variant="outline" className="w-full">
-            Follow
-          </Button>
+          {post.author_username !== username &&
+            (followingOfUser.some(f => f.following_profile.username === post.author_username) ? (
+              <Button variant="outline" className="w-full" onClick={e => handleFollow(e, post.author_username)}>
+                Unfollow
+              </Button>
+            ) : (
+              <Button variant="outline" className="w-full" onClick={e => handleFollow(e, post.author_username)}>
+                Follow
+              </Button>
+            ))}
         </aside>
       </div>
     </div>

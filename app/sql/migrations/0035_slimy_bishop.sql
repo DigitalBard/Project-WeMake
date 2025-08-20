@@ -1,0 +1,1 @@
+ALTER POLICY "follow-select-policy" ON "follows" TO public USING (true);

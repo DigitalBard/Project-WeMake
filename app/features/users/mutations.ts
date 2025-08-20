@@ -72,3 +72,37 @@ export const sendMessage = async (
     return roomData.message_room_id
   }
 }
+
+export const toggleFollow = async (
+  client: SupabaseClient<Database>,
+  { userId, username }: { userId: string; username: string }
+) => {
+  const { data: profile, error: profileError } = await client
+    .from('profiles')
+    .select('profile_id')
+    .eq('username', username)
+    .single()
+
+  if (profileError) {
+    throw new Error(profileError.message)
+  }
+
+  const { count } = await client
+    .from('follows')
+    .select('*', { count: 'exact', head: true })
+    .eq('follower_id', userId)
+    .eq('following_id', profile.profile_id)
+
+  if (count === 0) {
+    await client.from('follows').insert({
+      follower_id: userId,
+      following_id: profile.profile_id,
+    })
+  } else {
+    await client.from('follows').delete().eq('follower_id', userId).eq('following_id', profile.profile_id)
+  }
+
+  return {
+    ok: true,
+  }
+}

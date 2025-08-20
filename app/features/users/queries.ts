@@ -244,3 +244,85 @@ export const sendMessageToRoom = async (
     throw new Error(error.message)
   }
 }
+
+export const getFollowers = async (client: SupabaseClient<Database>, { username }: { username: string }) => {
+  const { data: profile, error: profileError } = await client
+    .from('profiles')
+    .select('profile_id')
+    .eq('username', username)
+    .single()
+
+  if (profileError) {
+    throw new Error('Profile not found')
+  }
+
+  const { data, error } = await client
+    .from('follows')
+    .select(
+      `
+    followers_profile:profiles!follower_id(
+      username,
+      avatar,
+      name
+    )
+    
+    `
+    )
+    .eq('following_id', profile.profile_id)
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data
+}
+
+export const getFollowing = async (client: SupabaseClient<Database>, { username }: { username: string }) => {
+  const { data: profile, error: profileError } = await client
+    .from('profiles')
+    .select('profile_id')
+    .eq('username', username)
+    .single()
+
+  if (profileError) {
+    throw new Error('Profile not found')
+  }
+
+  const { data, error } = await client
+    .from('follows')
+    .select(
+      `
+    following_profile:profiles!following_id(
+      username,
+      avatar,
+      name
+    )
+    `
+    )
+    .eq('follower_id', profile.profile_id)
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}
+
+export const getFollowingById = async (client: SupabaseClient<Database>, { userId }: { userId: string | null }) => {
+  if (!userId) {
+    return []
+  }
+
+  const { data, error } = await client
+    .from('follows')
+    .select(
+      `
+    following_profile:profiles!following_id(
+      username
+    )
+    `
+    )
+    .eq('follower_id', userId)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}

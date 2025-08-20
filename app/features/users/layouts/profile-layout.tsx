@@ -14,17 +14,19 @@ import { Form } from 'react-router'
 import { Badge } from '~/common/components/ui/badge'
 import { cn } from '~/lib/utils'
 import type { Route } from './+types/profile-layout'
-import { getUserProfile } from '../queries'
+import { getFollowers, getFollowing, getUserProfile } from '../queries'
 import { makeSSRClient } from '~/supa-client'
 
 export const loader = async ({ request, params }: Route.LoaderArgs & { params: { username: string } }) => {
-  const { client, headers } = makeSSRClient(request)
+  const { client } = makeSSRClient(request)
   const user = await getUserProfile(client, { username: params.username })
-  return { user }
+  const followers = await getFollowers(client, { username: params.username })
+  const following = await getFollowing(client, { username: params.username })
+  return { user, followers, following }
 }
 
 export default function ProfileLayout({ loaderData, params }: Route.ComponentProps) {
-  const { user } = loaderData
+  const { user, followers, following } = loaderData
   const { isLoggedIn, username } = useOutletContext<{ isLoggedIn: boolean; username?: string }>()
 
   return (
@@ -70,8 +72,12 @@ export default function ProfileLayout({ loaderData, params }: Route.ComponentPro
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">@{user.username}</span>
             <Badge variant="secondary">{user.role}</Badge>
-            <Badge variant="secondary">100 followers</Badge>
-            <Badge variant="secondary">100 following</Badge>
+            <Badge variant="outline" className="hover:bg-accent">
+              <Link to={`/users/${user.username}/followers`}>{followers.length} followers</Link>
+            </Badge>
+            <Badge variant="outline" className="hover:bg-accent">
+              <Link to={`/users/${user.username}/following`}>{following.length} following</Link>
+            </Badge>
           </div>
         </div>
       </div>
@@ -93,7 +99,7 @@ export default function ProfileLayout({ loaderData, params }: Route.ComponentPro
         ))}
       </div>
       <div className="max-w-screen-md">
-        <Outlet context={{ headline: user.headline, bio: user.bio }} />
+        <Outlet context={{ headline: user.headline, bio: user.bio, followers, following }} />
       </div>
     </div>
   )
