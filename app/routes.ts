@@ -87,7 +87,10 @@ export default [
       ]),
     ]),
     route('/profile', 'features/users/pages/my-profile-page.tsx'),
-    route('/settings', 'features/users/pages/settings-page.tsx'),
+    ...prefix('/settings', [
+      index('features/users/pages/settings-page.tsx'),
+      route('/username', 'features/users/pages/check-username-available-page.tsx'),
+    ]),
     route('/notifications', 'features/users/pages/notifications-page.tsx'),
     route('/notifications/:notificationId/see', 'features/users/pages/see-notification-page.tsx'),
     layout('features/users/layouts/messages-layout.tsx', [

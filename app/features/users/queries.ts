@@ -326,3 +326,20 @@ export const getFollowingById = async (client: SupabaseClient<Database>, { userI
   }
   return data
 }
+
+export const isUsernameAvailable = async (
+  client: SupabaseClient<Database>,
+  { username, userId }: { username: string; userId: string }
+) => {
+  const { data, error } = await client.from('profiles').select('profile_id').eq('username', username)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  if ((data && data.length > 0 && data[0].profile_id === userId) || data.length === 0) {
+    return true
+  }
+
+  return false
+}
