@@ -23,6 +23,10 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     }
   }
 
+  if (error) {
+    console.log(error)
+  }
+
   const { client } = makeSSRClient(request)
   const fromUserId = await getLoggedInUserId(client)
   const { profile_id: toUserId } = await getUserProfile(client, { username: params.username })

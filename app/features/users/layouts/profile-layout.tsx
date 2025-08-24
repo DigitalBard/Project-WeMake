@@ -9,13 +9,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/common/components/ui/dialog'
-import { Textarea } from '~/common/components/ui/textarea'
 import { Form } from 'react-router'
 import { Badge } from '~/common/components/ui/badge'
 import { cn } from '~/lib/utils'
 import type { Route } from './+types/profile-layout'
 import { getFollowers, getFollowing, getUserProfile } from '../queries'
 import { makeSSRClient } from '~/supa-client'
+import InputPair from '~/common/components/input-pair'
 
 export const loader = async ({ request, params }: Route.LoaderArgs & { params: { username: string } }) => {
   const { client } = makeSSRClient(request)
@@ -56,9 +56,21 @@ export default function ProfileLayout({ loaderData, params }: Route.ComponentPro
                       <DialogTitle>Message</DialogTitle>
                     </DialogHeader>
                     <DialogDescription className="space-y-4">
-                      <span className="text-sm text-muted-foreground">Send a message to John Doe</span>
-                      <Form className="space-y-4 flex flex-col">
-                        <Textarea placeholder="Message" className="resize-none" rows={4} />
+                      <span className="text-sm text-muted-foreground">Send a message to {user.name}</span>
+                      <Form
+                        className="space-y-4 flex flex-col"
+                        action={`/users/${user.username}/messages`}
+                        method="post">
+                        <InputPair
+                          label=""
+                          description=""
+                          placeholder="i.e. Hello, I'm interested in your product."
+                          name="content"
+                          type="text"
+                          id="content"
+                          required
+                          textArea
+                        />
                         <Button type="submit" className="self-end">
                           Send
                         </Button>
