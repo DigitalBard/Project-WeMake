@@ -118,7 +118,9 @@ export default function PostPage({ loaderData, actionData }: Route.ComponentProp
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold">{post.title}</h2>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>{post.author_name}</span>
+                  <Link to={`/users/${post.author_username}`} className="hover:underline">
+                    <span>{post.author_name}</span>
+                  </Link>
                   <DotIcon className="size-5" />
                   <span>{DateTime.fromISO(post.created_at, { zone: 'utc' }).toRelative()}</span>
                   <DotIcon className="size-5" />
@@ -179,7 +181,9 @@ export default function PostPage({ loaderData, actionData }: Route.ComponentProp
               {post.author_avatar ? <AvatarImage src={post.author_avatar} /> : null}
             </Avatar>
             <div className="flex flex-col items-start">
-              <h4 className="text-lg font-medium">{post.author_name}</h4>
+              <Link to={`/users/${post.author_username}`} className="hover:underline">
+                <h4 className="text-lg font-medium">{post.author_name}</h4>
+              </Link>
               <Badge variant="secondary">{post.author_role}</Badge>
             </div>
           </div>

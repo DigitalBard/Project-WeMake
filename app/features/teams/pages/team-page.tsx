@@ -3,7 +3,7 @@ import type { Route } from './+types/team-page'
 import { Avatar, AvatarFallback, AvatarImage } from '~/common/components/ui/avatar'
 import { Badge } from '~/common/components/ui/badge'
 import { Button } from '~/common/components/ui/button'
-import { Form } from 'react-router'
+import { Form, Link } from 'react-router'
 import InputPair from '~/common/components/input-pair'
 import { Card, CardContent, CardHeader, CardTitle } from '~/common/components/ui/card'
 import { getTeamById } from '../queries'
@@ -14,7 +14,7 @@ export const meta: Route.MetaFunction = () => {
 }
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
-  const { client, headers } = makeSSRClient(request)
+  const { client } = makeSSRClient(request)
   const team = await getTeamById(client, { teamId: Number(params.teamId) })
   return { team }
 }
@@ -70,7 +70,9 @@ export default function TeamPage({ loaderData }: Route.ComponentProps) {
               {team.team_leader.avatar ? <AvatarImage src={team.team_leader.avatar} /> : null}
             </Avatar>
             <div className="flex flex-col items-start">
-              <h4 className="text-lg font-medium">{team.team_leader.name}</h4>
+              <Link to={`/users/${team.team_leader.username}`} className="hover:underline">
+                <h4 className="text-lg font-medium">{team.team_leader.name}</h4>
+              </Link>
               <Badge variant="secondary">{team.team_leader.role}</Badge>
             </div>
           </div>

@@ -11,7 +11,7 @@ export const meta: Route.MetaFunction = ({ data }: Route.MetaArgs) => {
 }
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
-  const { client, headers } = makeSSRClient(request)
+  const { client } = makeSSRClient(request)
   const job = await getJobById(client, { jobId: Number(params.jobId) })
   return { job }
 }
