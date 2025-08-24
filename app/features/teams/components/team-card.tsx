@@ -15,7 +15,7 @@ interface TeamCardProps {
 export function TeamCard({ id, username, avatarUrl, positions, projectDescription }: TeamCardProps) {
   return (
     <Link to={`/teams/${id}`}>
-      <Card className="bg-transparent hover:bg-card/50 transition-colors">
+      <Card className="bg-transparent hover:bg-card/50 transition-colors h-full">
         <CardHeader className="flex flex-row items-center">
           <CardTitle className="text-base leading-loose">
             <Badge variant="secondary" className="inline-flex shadow-sm items-center">

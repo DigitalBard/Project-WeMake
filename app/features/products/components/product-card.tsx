@@ -36,7 +36,7 @@ export function ProductCard({
 
   return (
     <Link to={`/products/${id}`} className="block">
-      <Card className="w-full flex items-center justify-between bg-transparent hover:bg-card/50">
+      <Card className="w-full flex items-center justify-between bg-transparent hover:bg-card/50 h-full">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold leading-none tracking-tight">{name}</CardTitle>
           <CardDescription className="text-muted-foreground">{description}</CardDescription>

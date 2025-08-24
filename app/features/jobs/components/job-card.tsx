@@ -29,7 +29,7 @@ export function JobCard({
 }: JobCardProps) {
   return (
     <Link to={`/jobs/${id}`}>
-      <Card className="bg-transparent hover:bg-card/50 transition-colors">
+      <Card className="bg-transparent hover:bg-card/50 transition-colors h-full">
         <CardHeader>
           <div className="flex items-center gap-4 mb-4">
             <img src={companyLogoUrl} alt={`${companyName} Logo`} className="size-10 rounded-full" />

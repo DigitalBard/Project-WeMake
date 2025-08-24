@@ -17,7 +17,7 @@ interface IdeaCardProps {
 
 export function IdeaCard({ id, title, owner, viewCount, createdAt, upvoteCount, isClaimed = false }: IdeaCardProps) {
   return (
-    <Card className="bg-transparent hover:bg-card/50 transition-colors">
+    <Card className="bg-transparent hover:bg-card/50 transition-colors h-full">
       <CardHeader>
         <Link to={isClaimed || owner ? '' : `/ideas/${id}`}>
           <CardTitle className="text-xl">
