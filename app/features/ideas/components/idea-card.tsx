@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, useFetcher } from 'react-router'
 import { Button } from '../../../common/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../../../common/components/ui/card'
 import { DotIcon, EyeIcon, HeartIcon, LockIcon } from 'lucide-react'
@@ -16,6 +16,19 @@ interface IdeaCardProps {
 }
 
 export function IdeaCard({ id, title, owner, viewCount, createdAt, upvoteCount, isClaimed = false }: IdeaCardProps) {
+  const fetcher = useFetcher()
+  const handleClaim = () => {
+    fetcher.submit(
+      {
+        ideaId: id,
+      },
+      {
+        method: 'post',
+        action: `/ideas/${id}`,
+      }
+    )
+  }
+
   return (
     <Card className="bg-transparent hover:bg-card/50 transition-colors h-full">
       <CardHeader>
@@ -47,9 +60,7 @@ export function IdeaCard({ id, title, owner, viewCount, createdAt, upvoteCount, 
               <HeartIcon className="w-4 h-4" />
               <span>{upvoteCount}</span>
             </Button>
-            <Button asChild>
-              <Link to={`/ideas/${id}/claim`}>Claim idea now &rarr;</Link>
-            </Button>
+            <Button onClick={handleClaim}>Claim idea now &rarr;</Button>
           </>
         ) : (
           <Button variant="outline" disabled className="cursor-not-allowed">
