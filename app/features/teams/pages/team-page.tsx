@@ -9,8 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/common/components/ui
 import { getTeamById } from '../queries'
 import { makeSSRClient } from '~/supa-client'
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Team Details | wemake' }, { name: 'description', content: '팀 정보를 확인해보세요' }]
+export const meta: Route.MetaFunction = ({
+  data: {
+    team: {
+      team_leader: { name },
+    },
+  },
+}: Route.MetaArgs) => {
+  return [{ title: `${name}'s team | wemake` }, { name: 'description', content: 'Check out the team' }]
 }
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {

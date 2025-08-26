@@ -6,11 +6,12 @@ import { getCategory, getCategoryPages, getProductsByCategory } from '../queries
 import { z } from 'zod'
 import { makeSSRClient } from '~/supa-client'
 
-export const meta: Route.MetaFunction = () => {
-  return [
-    { title: 'Developer Tools' },
-    { name: 'description', content: 'Tools for developers to build products faster.' },
-  ]
+export const meta: Route.MetaFunction = ({
+  data: {
+    category: { name, description },
+  },
+}: Route.MetaArgs) => {
+  return [{ title: `${name} | wemake` }, { name: 'description', content: description }]
 }
 
 const paramsSchema = z.object({
@@ -18,7 +19,7 @@ const paramsSchema = z.object({
 })
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
-  const { client, headers } = makeSSRClient(request)
+  const { client } = makeSSRClient(request)
   const url = new URL(request.url)
   const page = Number(url.searchParams.get('page')) || 1
 
@@ -52,7 +53,7 @@ export default function CategoryPage({ loaderData }: Route.ComponentProps) {
             description={product.tagline}
             reviewsCount={product.reviews}
             viewCount={product.views}
-            upvoteCount={product.upvotes}
+            upvoteCount={Number(product.upvotes)}
           />
         ))}
       </div>

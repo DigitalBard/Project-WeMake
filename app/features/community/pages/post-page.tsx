@@ -22,8 +22,12 @@ import { createReply } from '../mutations'
 import { useEffect, useRef } from 'react'
 import { cn } from '~/lib/utils'
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Discussion | wemake' }, { name: 'description', content: 'Discussion page' }]
+export const meta: Route.MetaFunction = ({
+  data: {
+    post: { title },
+  },
+}: Route.MetaArgs) => {
+  return [{ title: `${title} | wemake` }, { name: 'description', content: 'Discussion page' }]
 }
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {

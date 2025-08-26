@@ -12,7 +12,10 @@ import { makeSSRClient } from '~/supa-client'
 import { getLoggedInUserId, getProductsByUserId } from '~/features/users/queries'
 
 export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Promote Your Product' }, { name: 'description', content: "Boost your product's visibility." }]
+  return [
+    { title: 'Promote Your Product | wemake' },
+    { name: 'description', content: "Boost your product's visibility." },
+  ]
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {

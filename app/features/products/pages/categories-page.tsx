@@ -5,7 +5,7 @@ import { getCategories } from '../queries'
 import { makeSSRClient } from '~/supa-client'
 
 export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Categories | wemake' }, { name: 'description', content: 'Product Categories' }]
+  return [{ title: 'Product Categories | wemake' }, { name: 'description', content: 'Product Categories' }]
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {

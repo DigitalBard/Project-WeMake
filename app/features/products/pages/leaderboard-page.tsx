@@ -8,7 +8,7 @@ import { DateTime } from 'luxon'
 import { makeSSRClient } from '~/supa-client'
 
 export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Leaderboard | wemake' }, { name: 'description', content: 'Top products leaderboard' }]
+  return [{ title: 'Product Leaderboards | wemake' }, { name: 'description', content: 'Top products leaderboards' }]
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {

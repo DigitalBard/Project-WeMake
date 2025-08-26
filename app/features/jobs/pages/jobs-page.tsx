@@ -9,8 +9,13 @@ import { getJobs } from '../queries'
 import { z } from 'zod'
 import { makeSSRClient } from '~/supa-client'
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Jobs | wemake' }, { name: 'description', content: 'Find your dream job at wemake' }]
+export const meta: Route.MetaFunction = ({ data: { searchParams } }: Route.MetaArgs) => {
+  return [
+    {
+      title: `${searchParams.location || ''} ${searchParams.type || ''} ${searchParams.salary || ''} jobs | wemake`,
+    },
+    { name: 'description', content: 'Find your dream job at wemake' },
+  ]
 }
 
 const searchParamsSchema = z.object({
@@ -20,7 +25,7 @@ const searchParamsSchema = z.object({
 })
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const { client, headers } = makeSSRClient(request)
+  const { client } = makeSSRClient(request)
   const url = new URL(request.url)
   const { success, data: parsedData } = searchParamsSchema.safeParse(Object.fromEntries(url.searchParams))
 
@@ -41,7 +46,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     salary: parsedData.salary,
   })
 
-  return { jobs }
+  return { jobs, searchParams: parsedData }
 }
 export default function JobsPage({ loaderData }: Route.ComponentProps) {
   const { jobs } = loaderData
